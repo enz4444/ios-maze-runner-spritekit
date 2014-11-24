@@ -7,6 +7,7 @@
 //
 
 #import <SpriteKit/SpriteKit.h>
+#import <Foundation/Foundation.h>
 
 @interface MazeCell:NSObject
 

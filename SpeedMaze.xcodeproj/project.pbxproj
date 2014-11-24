@@ -13,6 +13,10 @@
 		B3138E2A1A1F289700AE1142 /* abcmaze.txt in Resources */ = {isa = PBXBuildFile; fileRef = B3138E251A1F289700AE1142 /* abcmaze.txt */; };
 		B3138E2B1A1F289700AE1142 /* abcmazeGenerator.txt in Resources */ = {isa = PBXBuildFile; fileRef = B3138E261A1F289700AE1142 /* abcmazeGenerator.txt */; };
 		B3138E2F1A1F298A00AE1142 /* MazeGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = B3138E2E1A1F298A00AE1142 /* MazeGraph.m */; };
+		B38563D41A219C7D00525728 /* SpriteKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38563D31A219C7D00525728 /* SpriteKit.framework */; };
+		B38563D61A219C8800525728 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38563D51A219C8800525728 /* UIKit.framework */; };
+		B38563D81A219C8E00525728 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38563D71A219C8E00525728 /* Foundation.framework */; };
+		B38563DA1A219C9400525728 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38563D91A219C9400525728 /* CoreFoundation.framework */; };
 		B3EEB4801A1EA87B006DE679 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B3EEB47F1A1EA87B006DE679 /* main.m */; };
 		B3EEB4831A1EA87B006DE679 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B3EEB4821A1EA87B006DE679 /* AppDelegate.m */; };
 		B3EEB4861A1EA87B006DE679 /* GameScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B3EEB4851A1EA87B006DE679 /* GameScene.m */; };
@@ -44,6 +48,10 @@
 		B3138E261A1F289700AE1142 /* abcmazeGenerator.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = abcmazeGenerator.txt; sourceTree = "<group>"; };
 		B3138E2C1A1F293600AE1142 /* MazeGraph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MazeGraph.h; sourceTree = "<group>"; };
 		B3138E2E1A1F298A00AE1142 /* MazeGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MazeGraph.m; sourceTree = "<group>"; };
+		B38563D31A219C7D00525728 /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
+		B38563D51A219C8800525728 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		B38563D71A219C8E00525728 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		B38563D91A219C9400525728 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		B3EEB47A1A1EA87B006DE679 /* SpeedMaze.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpeedMaze.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3EEB47E1A1EA87B006DE679 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B3EEB47F1A1EA87B006DE679 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -72,6 +80,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B38563DA1A219C9400525728 /* CoreFoundation.framework in Frameworks */,
+				B38563D81A219C8E00525728 /* Foundation.framework in Frameworks */,
+				B38563D61A219C8800525728 /* UIKit.framework in Frameworks */,
+				B38563D41A219C7D00525728 /* SpriteKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -171,6 +183,10 @@
 		B3EEB4AF1A1EA9A9006DE679 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B38563D91A219C9400525728 /* CoreFoundation.framework */,
+				B38563D71A219C8E00525728 /* Foundation.framework */,
+				B38563D51A219C8800525728 /* UIKit.framework */,
+				B38563D31A219C7D00525728 /* SpriteKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

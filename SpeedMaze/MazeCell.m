@@ -6,9 +6,7 @@
 //  Copyright (c) 2014 beefSama. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "MazeCell.h"
-#import "GameScene.h"
 
 @interface MazeCell()
 
@@ -48,7 +46,7 @@
 
 
 -(void)visit{
-    
+    //NSLog(@"visit(%i,%i)",self.x,self.y);
     self.visited = YES;
 }
 
@@ -63,7 +61,7 @@
 }
 
 -(NSArray *)pathToOrigin{
-    NSMutableArray *path = [[NSMutableArray alloc] initWithObjects:self, nil];
+    NSMutableArray *path = [NSMutableArray arrayWithObject:self];
     MazeCell *thisParent = self.parent;
     while (thisParent) {
         [path addObject:thisParent];

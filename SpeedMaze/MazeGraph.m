@@ -58,33 +58,34 @@
         return NO;
     }
     
-    if (!self.removedEdges.count) {
-        return NO;
-    }
-    
     for(NSSet *cellPair in self.removedEdges){
         if ([cellPair containsObject:cellA] && [cellPair containsObject:cellB]){
-            return YES;
+            return NO;
         }
     }
     
-    return NO;
+    return YES;
 }
 
 -(NSArray *)cellUnvisitedNeighbors:(MazeCell *)cell{
-    NSMutableArray *unvistedNeighbors = [NSMutableArray arrayWithObject:nil];
+    NSMutableArray *unvistedNeighbors = [NSMutableArray array];
     for(MazeCell *unvistedCell in [self cellConnectedNeighbors:cell]){
+        //NSLog(@"in unvistedNeighbors for loop");
         if (unvistedCell.visited == NO) {
+            //NSLog(@"not visited");
             [unvistedNeighbors addObject:unvistedCell];
         }
     }
+    //NSLog(@"at cellUnvisitedNeighbors, count:%lu",unvistedNeighbors.count);
     return unvistedNeighbors;
 }
 
 -(NSArray *)cellConnectedNeighbors:(MazeCell *)cell{
-    NSMutableArray *connectedNeighbors = [NSMutableArray arrayWithObject:nil];
+    NSMutableArray *connectedNeighbors = [NSMutableArray array];
     for(MazeCell *tempCell in [self cellNeighbors:cell]){
+        //NSLog(@"in for loop, there is a temp cell");
         if ([self areConnectedBetween:cell and:tempCell]) {
+            //NSLog(@"it is connected");
             [connectedNeighbors addObject:tempCell];
         }
     }
@@ -92,7 +93,7 @@
 }
 
 -(NSArray *)cellDisconnectedNeighbors:(MazeCell *)cell{
-    NSMutableArray *disconnectedNeighbors = [NSMutableArray arrayWithObject:nil];
+    NSMutableArray *disconnectedNeighbors = [NSMutableArray array];
     for(MazeCell *tempCell in [self cellNeighbors:cell]){
         if (![self areConnectedBetween:cell and:tempCell]) {
             [disconnectedNeighbors addObject:tempCell];
@@ -101,7 +102,7 @@
     return disconnectedNeighbors;}
 
 -(NSArray *)cellNeighbors:(MazeCell *)cell{
-    NSMutableArray *neighbors = [NSMutableArray arrayWithObject:nil];
+    NSMutableArray *neighbors = [NSMutableArray array];
     MazeCell *topCell =    [self getCellAtX:cell.x       y:(cell.y - 1)];
     MazeCell *rightCell =  [self getCellAtX:(cell.x + 1) y:cell.y];
     MazeCell *bottomCell = [self getCellAtX:cell.x       y:(cell.y + 1)];
@@ -119,7 +120,7 @@
     if(cell.x > 0 && leftCell) {
         [neighbors addObject:leftCell];
     }
-
+    //NSLog(@"at cellNeighbors, count:%lu",neighbors.count);
     return neighbors;
 }
 
