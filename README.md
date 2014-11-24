@@ -1,4 +1,10 @@
 $_$
+1st: maze gen, maze solve, codes only
+2nd: maze UI,
+3rd: maze control, auto jump to corner
+4th: shadow, visible area, animation, trails
+5th: mutilplayer
+6th:menu and setting and option and sound effects
 
 # README #
 
