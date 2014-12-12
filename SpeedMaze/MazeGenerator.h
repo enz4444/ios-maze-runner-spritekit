@@ -16,22 +16,37 @@
 @interface MazeGenerator : NSObject
 
 @property(strong,nonatomic) MazeGraph *mazeGraph;
+
+/**
+ *  solution path, array of MazeCell
+ */
 @property(strong,nonatomic) NSArray *path;
+
 
 
 -(instancetype)initMazeWithWidth:(int)width height:(int)height;
 
--(void)defaultRecusiveGrowMaze:(MazeCell *)mazeCell;
+/**
+ *  do all the necessary steps to build a maze;
+ */
+-(void)defaultMaze;
+
+/**
+ *  after default init, invoke this to default grow maze from (0,0)
+ */
+-(void)defaultGenerateMaze;
+
 
 /**
  *  as it said
  */
 -(void)defaultSolveMaze;
 
+
 /**
- *  after default init, invoke this to default grow maze from (0,0)
+ *  mark the maze cell with wallType
  */
--(void)defaultGenerateMaze;
+-(void)defaultMazeCellFilter;
 
 
 /* //js

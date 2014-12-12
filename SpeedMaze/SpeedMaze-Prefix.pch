@@ -20,6 +20,18 @@
 
 #define UIColorFromRGBA(rgbValue, alphaValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:alphaValue]
 
+#define ZenMyRed UIColorFromRGB(0xf8a29c)
+#define ZenMyRedWithAlpha(alphaValue) UIColorFromRGBA(0xf8a29c, alphaValue)
+
+#define ZenMyGreen UIColorFromRGB(0xa9e0e7)
+#define ZenMyGreenWithAlpha(alphaValue) UIColorFromRGBA(0xa9e0e7, alphaValue)
+
+#define ZenMyBlue UIColorFromRGB(0x67C8FF)
+#define ZenMyBluenWithAlpha(alphaValue) UIColorFromRGBA(0x67C8FF, alphaValue)
+
+
+
+
 //application screen width
 #define ZenSW [[UIScreen mainScreen] applicationFrame].size.width
 

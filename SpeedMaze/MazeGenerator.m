@@ -36,6 +36,15 @@
     return self;
 }
 
+/**
+ *  do all the necessary steps to build a maze;
+ */
+-(void)defaultMaze{
+    [self defaultGenerateMaze];
+    [self defaultSolveMaze];
+    [self defaultMazeCellFilter];
+}
+
 -(void)defaultRecusiveGrowMaze:(MazeCell *)mazeCell{
     //NSLog(@"recursive at (%i,%i)",mazeCell.x,mazeCell.y);
     [mazeCell visit];
@@ -106,6 +115,27 @@
 -(void)defaultGenerateMaze{
     //NSLog(@"defaultGernerateMaze");
     [self defaultRecusiveGrowMaze:[[self mazeGraph] getCellAtX:0 y:0]];
+}
+
+/**
+ *  render/filter the maze cell, get rid(or mark) of those are 'tube' shape
+ */
+-(void)defaultMazeCellFilter{
+    for (int i = 0; i < self.mazeGraph.width; i++) {
+        for (int j = 0; j < self.mazeGraph.height; j++) {
+            MazeCell *thisCell = [self.mazeGraph getCellAtX:i y:j];
+            if(thisCell.wallOpenBitMask == (TopWallOpen | BottomWallOpen)){
+                thisCell.wallShapeBitMask = wallVerticalTubeShapeType;
+            }
+            else if (thisCell.wallOpenBitMask == (LeftWallOpen | RightWallOpen)) {
+                thisCell.wallShapeBitMask = wallHorizontalTubeShapeType;
+            }
+            else{
+                thisCell.wallShapeBitMask = wallUndefinedShape;
+            }
+        }
+    }
+
 }
 
 @end
