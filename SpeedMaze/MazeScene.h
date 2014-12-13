@@ -9,12 +9,12 @@
 #import <SpriteKit/SpriteKit.h>
 #import <Foundation/Foundation.h>
 #import "MazeGenerator.h"
-
+#import "GamepadScene.h"
 @interface MazeScene : SKScene
 
-//@property (strong, nonatomic) NSMutableArray * twoDSKNodes;
 @property (strong,nonatomic) MazeGenerator *theMaze;
 
+@property (strong,nonatomic) SKSpriteNode *avatar;
 /**
  *  default init, need to pass in the screen size to calculate some static vaules at 
  *  the beginning.
@@ -26,4 +26,10 @@
  */
 -(instancetype)initWithMaze:(MazeGenerator *)maze andScreenSize:(CGSize)screenSize;
 
+/**
+ *  when parent VC receive the delegate call, use this move
+ *
+ *  @param direction U L D R
+ */
+-(void)gamepadControlMoveTo:(NSString *)keyName;
 @end

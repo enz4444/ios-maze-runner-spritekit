@@ -12,7 +12,11 @@
 #import "MazeGenerator.h"
 #import "GameScene.h"
 #import "MazeScene.h"
+#import "GamepadScene.h"
 
-@interface GameViewController : UIViewController
+
+@interface GameViewController : UIViewController <GamepadSceneDelegate>
+
+@property (weak, nonatomic) MazeScene *mazeScene;
 
 @end

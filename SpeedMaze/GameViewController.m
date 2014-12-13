@@ -129,7 +129,15 @@
         // otherwise the game view is in center, can't set its position nor frame
         [skView addSubview:mazeSKView];
         // Present the scene.
+        self.mazeScene = mazeScene;
         [mazeSKView presentScene:mazeScene];
+        
+        SKView * contralpadSKView = [[SKView alloc] initWithFrame:CGRectMake(0, ZenSW, ZenSW, ZenSW/3)];
+        GamepadScene *gamepadScene = [[GamepadScene alloc] initWithSize:CGSizeMake(ZenSW, ZenSW/3)];
+        gamepadScene.gamepadDelegate = self;
+        [skView addSubview:contralpadSKView];
+        [contralpadSKView presentScene:gamepadScene];
+        
     }
     else{
         // Configure the view.
@@ -176,6 +184,10 @@
 
 - (BOOL)prefersStatusBarHidden {
     return YES;
+}
+
+-(void)gamepadKeyTouched:(NSString *)keyName{
+    [self.mazeScene gamepadControlMoveTo:keyName];
 }
 
 @end

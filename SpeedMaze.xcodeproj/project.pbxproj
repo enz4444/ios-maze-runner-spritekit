@@ -29,6 +29,7 @@
 		B3EEB49F1A1EA87C006DE679 /* SpeedMazeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B3EEB49E1A1EA87C006DE679 /* SpeedMazeTests.m */; };
 		B3EEB4AC1A1EA8C5006DE679 /* MazeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B3EEB4A91A1EA8C5006DE679 /* MazeCell.m */; };
 		B3EEB4AD1A1EA8C5006DE679 /* MazeGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = B3EEB4AB1A1EA8C5006DE679 /* MazeGenerator.m */; };
+		B3FB71F91A3BE8E600C270A8 /* GamepadScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B3FB71F81A3BE8E600C270A8 /* GamepadScene.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +77,8 @@
 		B3EEB4AA1A1EA8C5006DE679 /* MazeGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MazeGenerator.h; sourceTree = "<group>"; };
 		B3EEB4AB1A1EA8C5006DE679 /* MazeGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MazeGenerator.m; sourceTree = "<group>"; };
 		B3EEB4AE1A1EA96D006DE679 /* SpeedMaze-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SpeedMaze-Prefix.pch"; sourceTree = "<group>"; };
+		B3FB71F71A3BE8E600C270A8 /* GamepadScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GamepadScene.h; sourceTree = "<group>"; };
+		B3FB71F81A3BE8E600C270A8 /* GamepadScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GamepadScene.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +144,8 @@
 				B3EEB4A91A1EA8C5006DE679 /* MazeCell.m */,
 				B3EEB4AA1A1EA8C5006DE679 /* MazeGenerator.h */,
 				B3EEB4AB1A1EA8C5006DE679 /* MazeGenerator.m */,
+				B3FB71F71A3BE8E600C270A8 /* GamepadScene.h */,
+				B3FB71F81A3BE8E600C270A8 /* GamepadScene.m */,
 				B3138E2C1A1F293600AE1142 /* MazeGraph.h */,
 				B3138E2E1A1F298A00AE1142 /* MazeGraph.m */,
 				B3623B271A352B9E0049522F /* MazeScene.h */,
@@ -326,6 +331,7 @@
 				B3EEB4861A1EA87B006DE679 /* GameScene.m in Sources */,
 				B3EEB4801A1EA87B006DE679 /* main.m in Sources */,
 				B3EEB4AC1A1EA8C5006DE679 /* MazeCell.m in Sources */,
+				B3FB71F91A3BE8E600C270A8 /* GamepadScene.m in Sources */,
 				B3623B291A352BF20049522F /* MazeScene.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

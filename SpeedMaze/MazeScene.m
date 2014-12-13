@@ -9,7 +9,6 @@
 #import "MazeScene.h"
 
 @interface MazeScene ()
-
 /**
  *  draw the grid of maze
  */
@@ -43,39 +42,11 @@ static float squareWallThickness;
     [self drawAllWallsWithCellWallTypes];
     [self drawSolutionPath];
     
-    //print solution path
-    if (ZenDebug>=3) {
-        for (MazeCell *step in self.theMaze.path) {
-            NSLog(@"(%i,%i)",step.x,step.y);
-            
-        }
-    }
     
-    //ASCII maze no right,bottom walls // ⅃
-    if (ZenDebug>=3) {
-        for (int j = 0; j < 9; j++) {
-            NSString *row = @"";
-            for (int i = 0; i < 9; i++) {
-                if(![self.theMaze.mazeGraph areConnectedBetween:((MazeCell *)self.theMaze.mazeGraph.cells[i][j]) and:((MazeCell *)self.theMaze.mazeGraph.cells[i+1][j])]){
-                    if(![self.theMaze.mazeGraph areConnectedBetween:((MazeCell *)self.theMaze.mazeGraph.cells[i][j]) and:((MazeCell *)self.theMaze.mazeGraph.cells[i][j+1])]){
-                        row=[row stringByAppendingString:@" "];
-                    }
-                    else{
-                        row=[row stringByAppendingString:@"_"];
-                    }
-                }
-                else{
-                    if(![self.theMaze.mazeGraph areConnectedBetween:((MazeCell *)self.theMaze.mazeGraph.cells[i][j]) and:((MazeCell *)self.theMaze.mazeGraph.cells[i][j+1])]){
-                        row=[row stringByAppendingString:@"|"];
-                    }
-                    else{
-                        row=[row stringByAppendingString:@">"];
-                    }
-                }
-            }
-            NSLog(@"%@",row);
-        }
-    }
+    SKSpriteNode *avatar = [[SKSpriteNode alloc] initWithColor:[UIColor blackColor] size:CGSizeMake(50, 50)];
+    self.avatar = avatar;
+    self.avatar.position = CGPointMake(160,160);
+    [self addChild:self.avatar];
     /*
     SKShapeNode *square2 = [SKShapeNode shapeNodeWithRectOfSize:CGSizeMake(50, 50)];
     //square2.
@@ -263,9 +234,23 @@ static float squareWallThickness;
         for (int col = 0; col < self.theMaze.mazeGraph.width; col++) {
             MazeCell *thisCell =[self.theMaze.mazeGraph getCellAtX:col y:row];
             if (thisCell.wallShapeBitMask == wallVerticalTubeShapeType ||thisCell.wallShapeBitMask == wallHorizontalTubeShapeType) {
-                [self drawWallsWithTubeWallShapeTypeWithColumn:col andRow:row];
+                //[self drawWallsWithTubeWallShapeTypeWithColumn:col andRow:row];
+            }
+            if (thisCell.wallShapeBitMask != wallVerticalTubeShapeType && thisCell.wallShapeBitMask != wallHorizontalTubeShapeType) {
+                [self drawWallsWithDefaultWallShapeTypeWithColumn:col andRow:row];
             }
         }
+    }
+}
+
+-(void)drawWallsWithDefaultWallShapeTypeWithColumn:(int)col andRow:(int)row{
+    SKShapeNode *square = [SKShapeNode shapeNodeWithRect:CGRectMake(col*squareLength+squareLength*0.1,row*squareLength+squareLength*0.1,squareLength*0.8,squareLength*0.8)];
+    //square.lineWidth = 5;
+    //square.strokeColor = [SKColor redColor];
+    square.fillColor = ZenMyBluenWithAlpha(0.5);
+    [self addChild:square];
+    if (ZenDebug>=3) {
+        NSLog(@"TubeWall: %f, %f, %f, %f",square.frame.origin.x,square.frame.origin.y,square.frame.size.width,square.frame.size.height);
     }
 }
 
@@ -306,5 +291,25 @@ static float squareWallThickness;
 -(void)update:(NSTimeInterval)currentTime{
     
 }
+
+-(void)gamepadControlMoveTo:(NSString *)keyName{
+    if ([keyName isEqualToString:@"U"]) {
+        NSLog(@"maze scene receives key pressed up");
+        self.avatar.position = CGPointMake(self.avatar.position.x, self.avatar.position.y + 50);
+    }
+    if ([keyName isEqualToString:@"L"]) {
+        NSLog(@"maze scene receives key pressed left");
+        self.avatar.position = CGPointMake(self.avatar.position.x - 50, self.avatar.position.y);
+    }
+    if ([keyName isEqualToString:@"D"]) {
+        NSLog(@"maze scene receives key pressed down");
+        self.avatar.position = CGPointMake(self.avatar.position.x, self.avatar.position.y - 50);
+    }
+    if ([keyName isEqualToString:@"R"]) {
+        NSLog(@"maze scene receives key pressed right");
+        self.avatar.position = CGPointMake(self.avatar.position.x + 50, self.avatar.position.y);
+    }
+}
+
 
 @end
