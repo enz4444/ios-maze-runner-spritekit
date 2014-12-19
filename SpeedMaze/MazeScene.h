@@ -10,6 +10,7 @@
 #import <Foundation/Foundation.h>
 #import "MazeGenerator.h"
 #import "GamepadScene.h"
+
 @interface MazeScene : SKScene
 
 /**
@@ -42,6 +43,13 @@
  *  the MazeCell that avatar is at
  */
 @property (strong,nonatomic) MazeCell *avatarMazeCell;
+
+/**
+ *  everything else about avatar, e.g. its skill
+ */
+@property (strong,nonatomic) MazeAvatar *mazeAvatar;
+
+@property (strong,nonatomic) NSString *directionWasPressed;
 
 /**
  *  default init, need to pass in the screen size to 

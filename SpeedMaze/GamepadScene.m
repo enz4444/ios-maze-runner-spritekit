@@ -10,6 +10,12 @@
 
 @interface GamepadScene()
 
+@property (strong,nonatomic) SKSpriteNode *up;
+@property (strong,nonatomic) SKSpriteNode *left;
+@property (strong,nonatomic) SKSpriteNode *down;
+@property (strong,nonatomic) SKSpriteNode *right;
+@property (strong,nonatomic) SKSpriteNode *skill;
+
 @end
 
 @implementation GamepadScene
@@ -54,6 +60,17 @@ static CGPoint gamepadCenter;
     right.position = CGPointMake(gamepadCenter.x + gamepadButtonWidth, gamepadCenter.y);
     [self addChild:right];
     
+    //special, skill key
+    SKSpriteNode *skill = [[SKSpriteNode alloc] initWithColor:[UIColor greenColor] size:CGSizeMake(gamepadButtonWidth, gamepadButtonWidth)];
+    skill.name = @"S";
+    skill.position = CGPointMake( gamepadButtonWidth/2, gamepadCenter.y);
+    [self addChild:skill];
+    
+    self.up = up;
+    self.right = right;
+    self.down = down;
+    self.left = left;
+    self.skill = skill;
 }
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {

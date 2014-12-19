@@ -11,6 +11,7 @@
 #import <UIKit/UIKit.h>
 #import "MazeCell.h"
 #import "MazeGraph.h"
+#import "MazeAvatar.h"
 
 
 @interface MazeGenerator : NSObject
