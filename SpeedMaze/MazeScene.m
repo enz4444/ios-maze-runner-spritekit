@@ -43,14 +43,18 @@ static float squareWallThickness;
     //[self drawSolutionPath];
     
     
-    SKSpriteNode *avatar = [[SKSpriteNode alloc] initWithColor:[UIColor blackColor] size:CGSizeMake(squareLength*0.7, squareLength*0.7)];
+    SKSpriteNode *avatar = [[SKSpriteNode alloc] initWithColor:[UIColor blackColor] size:CGSizeMake(squareLength*0.6, squareLength*0.6)];
     self.avatar = avatar;
     
     //place avatar at (0,0)
     self.avatar.position = CGPointMake(squareLength/2,squareLength/2);
     [self addChild:self.avatar];
     
+    // mark the original maze cell that avatar is at
     self.avatarMazeCell = [self.theMaze.mazeGraph getCellAtX:0 y:0];
+    
+    // draw mist after initial placement of avatar
+    [self drawMistAsOneNodeFromStraightSightWithAvatarMazeCell:self.avatarMazeCell];
     
     /*
     SKShapeNode *square2 = [SKShapeNode shapeNodeWithRectOfSize:CGSizeMake(squareLength, squareLength)];
@@ -139,11 +143,17 @@ static float squareWallThickness;
         }
     }
     square.path = [wallPath CGPath];
-    square.lineWidth = squareLength / 10.0;
+    
+    //thickness of walls
+    square.lineWidth = squareLength / 5.0;
+    
     square.strokeColor = [SKColor blueColor];
     square.fillColor = [SKColor clearColor];
-    [self addChild:square];
+    self.mazeLayout = square;
+    
     NSLog(@"drawAllWallsAsOneNode: %f, %f, %f, %f",square.frame.origin.x,square.frame.origin.y,square.frame.size.width,square.frame.size.height);
+    
+    [self addChild:self.mazeLayout];
 }
 
 -(UIBezierPath *)drawWallWithCell:(MazeCell *)cell withSquareLength:(float)squareLength{
@@ -219,6 +229,7 @@ static float squareWallThickness;
         return nil;
     }
     self.theMaze = maze;
+    self.visibleCells = [NSMutableSet set];
     squareLength = self.size.width / self.theMaze.mazeGraph.width;
     squareWallThickness = squareLength / 10.0;
 
@@ -297,27 +308,39 @@ static float squareWallThickness;
     
 }
 
+/**
+ *  delegate method, to play with maze
+ *
+ *  @param keyName from the other SKView that has gamepad
+ */
 -(void)gamepadControlMoveTo:(NSString *)keyName{
     NSLog(@"avatarCell x:%i,y:%i",self.avatarMazeCell.x,self.avatarMazeCell.y);
+    
+    // move avatar(node and cell) according to key stroke
     [self moveAvatarAccordingToMazeCell:self.avatar mazeCell:self.avatarMazeCell inDirection:keyName];
-    /*
-    if ([keyName isEqualToString:@"U"]) {
-        NSLog(@"maze scene receives key pressed up");
-        self.avatar.position = CGPointMake(self.avatar.position.x, self.avatar.position.y + squareLength);
+    
+    // draw mist after moment
+    [self drawMistAsOneNodeFromStraightSightWithAvatarMazeCell:self.avatarMazeCell];
+    
+    
+    if (ZenDebug >= 3) {
+        if ([keyName isEqualToString:@"U"]) {
+            NSLog(@"maze scene receives key pressed up");
+            self.avatar.position = CGPointMake(self.avatar.position.x, self.avatar.position.y + squareLength);
+        }
+        if ([keyName isEqualToString:@"L"]) {
+            NSLog(@"maze scene receives key pressed left");
+            self.avatar.position = CGPointMake(self.avatar.position.x - squareLength, self.avatar.position.y);
+        }
+        if ([keyName isEqualToString:@"D"]) {
+            NSLog(@"maze scene receives key pressed down");
+            self.avatar.position = CGPointMake(self.avatar.position.x, self.avatar.position.y - squareLength);
+        }
+        if ([keyName isEqualToString:@"R"]) {
+            NSLog(@"maze scene receives key pressed right");
+            self.avatar.position = CGPointMake(self.avatar.position.x + squareLength, self.avatar.position.y);
+        }
     }
-    if ([keyName isEqualToString:@"L"]) {
-        NSLog(@"maze scene receives key pressed left");
-        self.avatar.position = CGPointMake(self.avatar.position.x - squareLength, self.avatar.position.y);
-    }
-    if ([keyName isEqualToString:@"D"]) {
-        NSLog(@"maze scene receives key pressed down");
-        self.avatar.position = CGPointMake(self.avatar.position.x, self.avatar.position.y - squareLength);
-    }
-    if ([keyName isEqualToString:@"R"]) {
-        NSLog(@"maze scene receives key pressed right");
-        self.avatar.position = CGPointMake(self.avatar.position.x + squareLength, self.avatar.position.y);
-    }
-     */
 }
 
 /**
@@ -328,10 +351,12 @@ static float squareWallThickness;
  *  @param keyName  U L D R
  */
 -(void)moveAvatarAccordingToMazeCell:(SKSpriteNode *)avatar mazeCell:(MazeCell *)mazeCell inDirection:(NSString *)keyName{
+    if (ZenDebug>=3) {
+        [mazeCell printCellOpenWallBitMask];
+    }
     if ([keyName isEqualToString:@"U"]) {
         while ((mazeCell.wallOpenBitMask & TopWallOpen)) {
             NSLog(@"walling in %@",keyName);
-            [mazeCell printCellOpenWallBitMask];
             avatar.position = CGPointMake(avatar.position.x, avatar.position.y + squareLength);
             mazeCell =  [self.theMaze.mazeGraph getCellAtX:mazeCell.x y:mazeCell.y+1];
             self.avatarMazeCell = mazeCell;
@@ -374,6 +399,116 @@ static float squareWallThickness;
             }
         }
     }
+    
+}
+
+/**
+ *  Do this everythime after avatar done moving, to re-caculate sight and 
+ *  re-draw mist. After node of mist is added to view, all cell.hasMist
+ *  should return to YES;(restore the state after finishing adding mist)
+ *
+ *  @param avatarMazeCell location of avatar
+ */
+-(void)drawMistAsOneNodeFromStraightSightWithAvatarMazeCell:(MazeCell *)avatarMazeCell{
+    [self straightSightOfAvatar:avatarMazeCell];
+    if (self.mist != nil) {
+        [self.mist removeFromParent];
+        self.mist = nil;
+    }
+    [self drawMistWithUIBezierPath];
+    [self restoreMist:self.visibleCells];
+}
+
+/**
+ *  Loop throught all cells, if its hasMist == YES, then draw a square stroke on top of it
+ *  Use one path to draw all mists
+ */
+-(void)drawMistWithUIBezierPath{
+    SKShapeNode *square = [SKShapeNode node];
+    UIBezierPath* wallPath = [[UIBezierPath alloc] init];
+    //from origin point, draw bottom line
+    
+    MazeCell *temp;
+    for (int h = 0; h < self.theMaze.mazeGraph.height; h++) {
+        for (int w = 0; w < self.theMaze.mazeGraph.width; w++) {
+            // move the drawing head to the center point locate on this cell (w,h)
+            [wallPath moveToPoint:
+                CGPointMake( w * squareLength, squareLength/2 + h * squareLength)
+             ];
+            temp = [self.theMaze.mazeGraph getCellAtX:w y:h];
+            if (temp.hasMist == YES) {
+                //draw a dot here, a fatty path like a square that covers a maze cell
+                [wallPath addLineToPoint:
+                    CGPointMake(squareLength + w * squareLength, squareLength/2 + h * squareLength)
+                 ];
+            }
+        }
+    }
+    square.path = [wallPath CGPath];
+    square.lineWidth = squareLength*1.1;
+    square.strokeColor = [SKColor blackColor];
+    self.mist = square;
+    [self addChild:self.mist];
+
+}
+
+-(void)restoreMist:(NSMutableSet *)visibleCells{
+    for (MazeCell *cell in visibleCells) {
+        cell.hasMist = YES;
+    }
+    [visibleCells removeAllObjects];
+}
+
+/**
+ *  calculate the sight of avatar at its location, mark all the visable aera with cell.hasMist = YES
+ *
+ *  @param avatarMazeCell location of avatar, avatarMazeCell
+ */
+-(void)straightSightOfAvatar:(MazeCell *)avatarMazeCell{
+    avatarMazeCell.hasMist = NO;
+    [self.visibleCells removeAllObjects];
+    [self.visibleCells addObject:avatarMazeCell];
+    
+    // every direction need to re-assign the pointer to origin(avatarMazeCell)
+    MazeCell *mazeCell = avatarMazeCell;
+    while ((mazeCell.wallOpenBitMask & TopWallOpen)) {
+        mazeCell =  [self.theMaze.mazeGraph getCellAtX:mazeCell.x y:mazeCell.y+1];
+        mazeCell.hasMist = NO;
+        [self.visibleCells addObject:mazeCell];
+        if (mazeCell.wallShapeBitMask != wallVerticalTubeShapeType) {
+            break;
+        }
+    }
+    
+    mazeCell = avatarMazeCell;
+    while ((mazeCell.wallOpenBitMask & LeftWallOpen) ) {
+        mazeCell =  [self.theMaze.mazeGraph getCellAtX:mazeCell.x-1 y:mazeCell.y];
+        mazeCell.hasMist = NO;
+        [self.visibleCells addObject:mazeCell];
+        if (mazeCell.wallShapeBitMask != wallHorizontalTubeShapeType) {
+            break;
+        }
+    }
+    
+    mazeCell = avatarMazeCell;
+    while ((mazeCell.wallOpenBitMask & BottomWallOpen) ) {
+        mazeCell =  [self.theMaze.mazeGraph getCellAtX:mazeCell.x y:mazeCell.y-1];
+        mazeCell.hasMist = NO;
+        [self.visibleCells addObject:mazeCell];
+        if (mazeCell.wallShapeBitMask != wallVerticalTubeShapeType) {
+            break;
+        }
+    }
+    mazeCell = avatarMazeCell;
+    while ((mazeCell.wallOpenBitMask & RightWallOpen) ) {
+        mazeCell =  [self.theMaze.mazeGraph getCellAtX:mazeCell.x+1 y:mazeCell.y];
+        mazeCell.hasMist = NO;
+        [self.visibleCells addObject:mazeCell];
+        if (mazeCell.wallShapeBitMask != wallHorizontalTubeShapeType) {
+            break;
+        }
+    }
+    
 }
 
 @end

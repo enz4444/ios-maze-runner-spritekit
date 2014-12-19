@@ -12,16 +12,40 @@
 #import "GamepadScene.h"
 @interface MazeScene : SKScene
 
+/**
+ *  all the codes and glory
+ */
 @property (strong,nonatomic) MazeGenerator *theMaze;
 
+/**
+ *  the maze walls. Draw all the walls a node with lines.
+ */
+@property (strong,nonatomic) SKShapeNode *mazeLayout;
+
+/**
+ *  the avatar that explore the maze
+ */
 @property (strong,nonatomic) SKSpriteNode *avatar;
+
+/**
+ *  mist as a fat line
+ */
+@property (strong,nonatomic) SKShapeNode *mist;
+
+/**
+ *  Set of visible cells, those without mist.Use it to
+ *  draw/re-draw mist.
+ */
+@property (strong,nonatomic) NSMutableSet *visibleCells;
 
 /**
  *  the MazeCell that avatar is at
  */
 @property (strong,nonatomic) MazeCell *avatarMazeCell;
+
 /**
- *  default init, need to pass in the screen size to calculate some static vaules at 
+ *  default init, need to pass in the screen size to 
+ *  calculate some static vaules at
  *  the beginning.
  *
  *  @param maze       maze

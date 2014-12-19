@@ -27,24 +27,22 @@
     }
     self.visited = NO;
     self.discorver = 0;
+    self.parent = nil;
     self.wallOpenBitMask = AllwallsClose;
     self.wallShapeBitMask = wallUndefinedShape;
+    self.hasMist = YES;
     return self;
 }
 
 
 -(instancetype)initWithX:(int)x Y:(int)y{
-    self = [super init];
+    self = [self init];
     if (self == nil) {
         return nil;
     }
-    self.visited = NO;
-    self.discorver = 0;
     self.x = x;
     self.y = y;
-    self.parent = nil;
-    self.wallOpenBitMask = AllwallsClose;
-    self.wallShapeBitMask = wallUndefinedShape;
+    
     return self;
 }
 

@@ -41,6 +41,7 @@ typedef NS_ENUM(uint32_t, wallShapeType)
 @property (assign, nonatomic) int discorver;
 @property (assign, nonatomic) openWallType wallOpenBitMask; //N,W,S,E or U,L,D,R
 @property (assign, nonatomic) wallShapeType wallShapeBitMask;
+@property (assign, nonatomic) BOOL hasMist;
 
 -(instancetype)init;
 
