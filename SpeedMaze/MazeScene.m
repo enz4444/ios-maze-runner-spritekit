@@ -39,16 +39,21 @@ static float squareWallThickness;
     NSLog(@"square length and thickness: %f, %f", squareLength, squareWallThickness);
     
     [self drawAllWallsAsOneNode];
-    [self drawAllWallsWithCellWallTypes];
-    [self drawSolutionPath];
+    //[self drawAllWallsWithCellWallTypes];
+    //[self drawSolutionPath];
     
     
-    SKSpriteNode *avatar = [[SKSpriteNode alloc] initWithColor:[UIColor blackColor] size:CGSizeMake(50, 50)];
+    SKSpriteNode *avatar = [[SKSpriteNode alloc] initWithColor:[UIColor blackColor] size:CGSizeMake(squareLength*0.7, squareLength*0.7)];
     self.avatar = avatar;
-    self.avatar.position = CGPointMake(160,160);
+    
+    //place avatar at (0,0)
+    self.avatar.position = CGPointMake(squareLength/2,squareLength/2);
     [self addChild:self.avatar];
+    
+    self.avatarMazeCell = [self.theMaze.mazeGraph getCellAtX:0 y:0];
+    
     /*
-    SKShapeNode *square2 = [SKShapeNode shapeNodeWithRectOfSize:CGSizeMake(50, 50)];
+    SKShapeNode *square2 = [SKShapeNode shapeNodeWithRectOfSize:CGSizeMake(squareLength, squareLength)];
     //square2.
     square2.position = nil;
     //square2.frame = CGRectMake(100, 100, 200, 200);
@@ -182,7 +187,7 @@ static float squareWallThickness;
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
     for (UITouch *touch in touches) {
         CGPoint location = [touch locationInNode:self];
-        SKShapeNode *square2 = [SKShapeNode shapeNodeWithRect:CGRectMake(0,0,50,50)];
+        SKShapeNode *square2 = [SKShapeNode shapeNodeWithRect:CGRectMake(0,0,squareLength,squareLength)];
         //square2.
         square2.position = location;
         square2.lineWidth = 5;
@@ -198,7 +203,7 @@ static float squareWallThickness;
         //from origin point, draw bottom line
         [wallPath moveToPoint:CGPointMake(0.0, 0.0)];
         [wallPath addLineToPoint:CGPointMake(10.0,30.0)];
-        [wallPath moveToPoint:CGPointMake(50.0, 150.0)];
+        [wallPath moveToPoint:CGPointMake(squareLength.0, 1squareLength.0)];
         [wallPath addLineToPoint:CGPointMake(100.0,300.0)];
         square.path = [wallPath CGPath];
         square.lineWidth = 2;
@@ -293,23 +298,82 @@ static float squareWallThickness;
 }
 
 -(void)gamepadControlMoveTo:(NSString *)keyName{
+    NSLog(@"avatarCell x:%i,y:%i",self.avatarMazeCell.x,self.avatarMazeCell.y);
+    [self moveAvatarAccordingToMazeCell:self.avatar mazeCell:self.avatarMazeCell inDirection:keyName];
+    /*
     if ([keyName isEqualToString:@"U"]) {
         NSLog(@"maze scene receives key pressed up");
-        self.avatar.position = CGPointMake(self.avatar.position.x, self.avatar.position.y + 50);
+        self.avatar.position = CGPointMake(self.avatar.position.x, self.avatar.position.y + squareLength);
     }
     if ([keyName isEqualToString:@"L"]) {
         NSLog(@"maze scene receives key pressed left");
-        self.avatar.position = CGPointMake(self.avatar.position.x - 50, self.avatar.position.y);
+        self.avatar.position = CGPointMake(self.avatar.position.x - squareLength, self.avatar.position.y);
     }
     if ([keyName isEqualToString:@"D"]) {
         NSLog(@"maze scene receives key pressed down");
-        self.avatar.position = CGPointMake(self.avatar.position.x, self.avatar.position.y - 50);
+        self.avatar.position = CGPointMake(self.avatar.position.x, self.avatar.position.y - squareLength);
     }
     if ([keyName isEqualToString:@"R"]) {
         NSLog(@"maze scene receives key pressed right");
-        self.avatar.position = CGPointMake(self.avatar.position.x + 50, self.avatar.position.y);
+        self.avatar.position = CGPointMake(self.avatar.position.x + squareLength, self.avatar.position.y);
     }
+     */
 }
 
+/**
+ *  if the wall in that driection is open, and the destination cell is tubeType, keep going
+ *
+ *  @param avatar   avatar
+ *  @param mazeCell the mazeCell that avatar is at
+ *  @param keyName  U L D R
+ */
+-(void)moveAvatarAccordingToMazeCell:(SKSpriteNode *)avatar mazeCell:(MazeCell *)mazeCell inDirection:(NSString *)keyName{
+    if ([keyName isEqualToString:@"U"]) {
+        while ((mazeCell.wallOpenBitMask & TopWallOpen)) {
+            NSLog(@"walling in %@",keyName);
+            [mazeCell printCellOpenWallBitMask];
+            avatar.position = CGPointMake(avatar.position.x, avatar.position.y + squareLength);
+            mazeCell =  [self.theMaze.mazeGraph getCellAtX:mazeCell.x y:mazeCell.y+1];
+            self.avatarMazeCell = mazeCell;
+            NSLog(@"move avatarCell end at x:%i,y:%i",self.avatarMazeCell.x,self.avatarMazeCell.y);
+            if (mazeCell.wallShapeBitMask != wallVerticalTubeShapeType) {
+                break;
+            }
+        }
+    }
+    if ([keyName isEqualToString:@"L"]) {
+        while ((mazeCell.wallOpenBitMask & LeftWallOpen) ) {
+            NSLog(@"walling in %@",keyName);
+            avatar.position = CGPointMake(avatar.position.x - squareLength, avatar.position.y);
+            mazeCell =  [self.theMaze.mazeGraph getCellAtX:mazeCell.x-1 y:mazeCell.y];
+            self.avatarMazeCell = mazeCell;
+            if (mazeCell.wallShapeBitMask != wallHorizontalTubeShapeType) {
+                break;
+            }
+        }
+    }
+    if ([keyName isEqualToString:@"D"]) {
+        while ((mazeCell.wallOpenBitMask & BottomWallOpen) ) {
+            NSLog(@"walling in %@",keyName);
+            avatar.position = CGPointMake(avatar.position.x, avatar.position.y - squareLength);
+            mazeCell =  [self.theMaze.mazeGraph getCellAtX:mazeCell.x y:mazeCell.y-1];
+            self.avatarMazeCell = mazeCell;
+            if (mazeCell.wallShapeBitMask != wallVerticalTubeShapeType) {
+                break;
+            }
+        }
+    }
+    if ([keyName isEqualToString:@"R"]) {
+        while ((mazeCell.wallOpenBitMask & RightWallOpen) ) {
+            NSLog(@"walling in %@",keyName);
+            avatar.position = CGPointMake(avatar.position.x + squareLength, avatar.position.y);
+            mazeCell =  [self.theMaze.mazeGraph getCellAtX:mazeCell.x+1 y:mazeCell.y];
+            self.avatarMazeCell = mazeCell;
+            if (mazeCell.wallShapeBitMask != wallHorizontalTubeShapeType) {
+                break;
+            }
+        }
+    }
+}
 
 @end

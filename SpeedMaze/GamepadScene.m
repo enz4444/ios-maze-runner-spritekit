@@ -65,6 +65,7 @@ static CGPoint gamepadCenter;
     if ([delegate respondsToSelector:@selector(gamepadKeyTouched:)]) {
         [delegate gamepadKeyTouched:touchedNode.name];
     }
+    /*
     if ([touchedNode.name isEqualToString:@"U"]) {
         NSLog(@"pressed up");
     }
@@ -77,6 +78,7 @@ static CGPoint gamepadCenter;
     if ([touchedNode.name isEqualToString:@"R"]) {
         NSLog(@"pressed right");
     }
+     */
     /*
     for (UITouch *touch in touches) {
         CGPoint location = [touch locationInNode:self];

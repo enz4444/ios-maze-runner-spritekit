@@ -75,6 +75,35 @@
     return [[path reverseObjectEnumerator] allObjects];
 }
 
+-(void)printCellOpenWallBitMask{
+    NSString *temp = [NSString stringWithFormat:@"Cell: (%i,%i) 's openWall:",self.x,self.y];
+    if (self.wallOpenBitMask & TopWallOpen) {
+        temp = [temp stringByAppendingString:@"U"];
+    }
+    else{
+        temp = [temp stringByAppendingString:@"-"];
+    }
+    if (self.wallOpenBitMask & LeftWallOpen) {
+        temp = [temp stringByAppendingString:@"L"];
+    }
+    else{
+        temp = [temp stringByAppendingString:@"-"];
+    }
+    if (self.wallOpenBitMask & BottomWallOpen) {
+        temp = [temp stringByAppendingString:@"D"];
+    }
+    else{
+        temp = [temp stringByAppendingString:@"-"];
+    }
+    if (self.wallOpenBitMask & RightWallOpen) {
+        temp = [temp stringByAppendingString:@"R"];
+    }
+    else{
+        temp = [temp stringByAppendingString:@"-"];
+    }
+    NSLog(@"%@",temp);
+}
+
 @end
 
 

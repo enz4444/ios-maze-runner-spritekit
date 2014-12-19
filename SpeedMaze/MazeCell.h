@@ -119,4 +119,6 @@ typedef NS_ENUM(uint32_t, wallShapeType)
  };
  };
  */
+
+-(void)printCellOpenWallBitMask;
 @end

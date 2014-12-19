@@ -15,6 +15,11 @@
 @property (strong,nonatomic) MazeGenerator *theMaze;
 
 @property (strong,nonatomic) SKSpriteNode *avatar;
+
+/**
+ *  the MazeCell that avatar is at
+ */
+@property (strong,nonatomic) MazeCell *avatarMazeCell;
 /**
  *  default init, need to pass in the screen size to calculate some static vaules at 
  *  the beginning.
