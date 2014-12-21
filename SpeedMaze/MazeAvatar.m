@@ -12,6 +12,7 @@
 
 @property (strong,nonatomic) NSMutableArray *undoStepArray;
 @property (strong,nonatomic) NSMutableArray *undoDirectionArray;
+@property (strong,nonatomic) NSMutableArray *snailTrailArray;
 
 @end
 
@@ -31,11 +32,21 @@
     self = [self init];
     self.avatarType = avatarType;
     if (self.avatarType == mazeAvatarBlackBox) {
+        NSLog(@"avatar is blackbox");
         //init an array of maze cells for undo button
         self.undoStepArray = [NSMutableArray array];
         self.undoDirectionArray = [NSMutableArray array];
 
     }
+    else if(self.avatarType == mazeAvatarGiraffe) {
+        NSLog(@"avatar is giraffe");
+        //do nothing, giraffe has only passive skill
+    }
+    else if(self.avatarType == mazeAvatarSnail){
+        NSLog(@"avatar is snail");
+        self.snailTrailArray = [NSMutableArray array];
+    }
+    
     return self;
 }
 
@@ -91,6 +102,27 @@
     [self.undoStepArray removeLastObject];
     return returnDirection;
 }
+
+-(void)mazeAvatarSnailAddAMazeCell:(MazeCell *)aCell{
+    NSAssert(self.avatarType == mazeAvatarSnail, ([NSString stringWithFormat:@"The bnail action should not perform on this avatar type: %i", self.avatarType]));
+    if (![self.snailTrailArray containsObject:aCell]) {
+        [self.snailTrailArray addObject:aCell];
+    }
+    else{
+        //already contain a trail, later can reset time counter to vaporize this cell
+    }
+}
+
+-(void)mazeAvatarSnailMarkAllTrailMazeCellToVisiable{
+    NSAssert(self.avatarType == mazeAvatarSnail, ([NSString stringWithFormat:@"The snail action should not perform on this avatar type: %i", self.avatarType]));
+    for (MazeCell *cell in self.snailTrailArray) {
+        cell.hasMist = NO;
+    }
+
+}
+
+
+
 
 
 @end

@@ -11,7 +11,11 @@
 #import "MazeGenerator.h"
 #import "GamepadScene.h"
 
+@protocol MazeSceneGameConditionDelegate;
+
 @interface MazeScene : SKScene
+
+@property (weak,nonatomic) id<MazeSceneGameConditionDelegate> gameConditionDelegate;
 
 /**
  *  all the codes and glory
@@ -64,9 +68,26 @@
 -(instancetype)initWithMaze:(MazeGenerator *)maze andScreenSize:(CGSize)screenSize;
 
 /**
+ *  like above
+ *
+ *  @param maze
+ *  @param screenSize 
+ *  @param avatarType
+ *
+ *  @return
+ */
+-(instancetype)initWithMaze:(MazeGenerator *)maze andScreenSize:(CGSize)screenSize andAvatarType:(mazeAvatarType)avatarType;
+
+/**
  *  when parent VC receive the delegate call, use this move
  *
  *  @param direction U L D R
  */
 -(void)gamepadControlMoveTo:(NSString *)keyName;
+@end
+
+@protocol MazeSceneGameConditionDelegate <NSObject>
+
+-(void)mazeSceneGameEnds:(NSString *)condition;
+
 @end

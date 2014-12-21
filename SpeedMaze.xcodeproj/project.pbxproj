@@ -14,6 +14,7 @@
 		B3138E2B1A1F289700AE1142 /* abcmazeGenerator.txt in Resources */ = {isa = PBXBuildFile; fileRef = B3138E261A1F289700AE1142 /* abcmazeGenerator.txt */; };
 		B3138E2F1A1F298A00AE1142 /* MazeGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = B3138E2E1A1F298A00AE1142 /* MazeGraph.m */; };
 		B326DC821A44CBFC00F5E4A2 /* MazeAvatar.m in Sources */ = {isa = PBXBuildFile; fileRef = B326DC811A44CBFC00F5E4A2 /* MazeAvatar.m */; };
+		B326DC851A451AF100F5E4A2 /* MenuScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B326DC841A451AF100F5E4A2 /* MenuScene.m */; };
 		B3623B291A352BF20049522F /* MazeScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B3623B281A352BF20049522F /* MazeScene.m */; };
 		B38563D41A219C7D00525728 /* SpriteKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38563D31A219C7D00525728 /* SpriteKit.framework */; };
 		B38563D61A219C8800525728 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38563D51A219C8800525728 /* UIKit.framework */; };
@@ -53,6 +54,8 @@
 		B3138E2E1A1F298A00AE1142 /* MazeGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MazeGraph.m; sourceTree = "<group>"; };
 		B326DC801A44CBDB00F5E4A2 /* MazeAvatar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MazeAvatar.h; sourceTree = "<group>"; };
 		B326DC811A44CBFC00F5E4A2 /* MazeAvatar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MazeAvatar.m; sourceTree = "<group>"; };
+		B326DC831A451AF100F5E4A2 /* MenuScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuScene.h; sourceTree = "<group>"; };
+		B326DC841A451AF100F5E4A2 /* MenuScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuScene.m; sourceTree = "<group>"; };
 		B3623B271A352B9E0049522F /* MazeScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MazeScene.h; sourceTree = "<group>"; };
 		B3623B281A352BF20049522F /* MazeScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MazeScene.m; sourceTree = "<group>"; };
 		B38563D31A219C7D00525728 /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
@@ -155,6 +158,8 @@
 				B3138E2E1A1F298A00AE1142 /* MazeGraph.m */,
 				B3623B271A352B9E0049522F /* MazeScene.h */,
 				B3623B281A352BF20049522F /* MazeScene.m */,
+				B326DC831A451AF100F5E4A2 /* MenuScene.h */,
+				B326DC841A451AF100F5E4A2 /* MenuScene.m */,
 				B3EEB4841A1EA87B006DE679 /* GameScene.h */,
 				B3EEB4851A1EA87B006DE679 /* GameScene.m */,
 				B3EEB4871A1EA87B006DE679 /* GameScene.sks */,
@@ -329,6 +334,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B326DC851A451AF100F5E4A2 /* MenuScene.m in Sources */,
 				B3EEB48B1A1EA87B006DE679 /* GameViewController.m in Sources */,
 				B326DC821A44CBFC00F5E4A2 /* MazeAvatar.m in Sources */,
 				B3EEB4831A1EA87B006DE679 /* AppDelegate.m in Sources */,

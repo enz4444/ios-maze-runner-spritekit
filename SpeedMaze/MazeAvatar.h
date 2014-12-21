@@ -21,6 +21,9 @@ typedef NS_ENUM(uint32_t, mazeAvatarType)
     // will leave track
     mazeAvatarSnail          = 0x1 << 2,
     
+    // no mist
+    mazeAvatarSunday         = 0x4 << 3,
+    
     //undefined
     mazeAvatarUndefined              = 0x0
 };
@@ -64,6 +67,20 @@ typedef NS_ENUM(uint32_t, mazeAvatarType)
  */
 -(MazeCell *)mazeAvatarBlackBoxUndoACell;
 -(NSString *)mazeAvatarBlackBoxUndoADirection;//use direction instead, already mirrored when return
+
+/**
+ *  add to this array for EVERY single tile of maze cell that snail walked in.
+ *  Better invoke this for every tile snails pass
+ *
+ *  @param aCell maze cell
+ */
+-(void)mazeAvatarSnailAddAMazeCell:(MazeCell *)aCell;
+
+/**
+ *  Mark all trail maze cells to visible/no mist.
+ *  Better invoke this before draw mist.
+ */
+-(void)mazeAvatarSnailMarkAllTrailMazeCellToVisiable;
 
 
 @end
