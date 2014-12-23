@@ -31,20 +31,43 @@ typedef NS_ENUM(uint32_t, mazeAvatarType)
 /**
  *  idealy, return instance of an avatar according to type
  */
-@interface MazeAvatar : NSObject
+@interface MazeAvatar : SKSpriteNode
 
-// the type of avatar in currect maze
+/**
+ *  the type of avatar in currect maze
+ */
 @property (assign, nonatomic) mazeAvatarType avatarType;
 
--(instancetype)init;
+@property (assign,readonly,nonatomic) float mazeAvatarSpeed;
 
--(instancetype)initWithAvatarType:(mazeAvatarType)avatarType;
+@property (assign,readonly,nonatomic) BOOL isAnimating;
 
-//need method to effect the maze when avtar moves
 
-//need method to effect the maze when avtar invokes skill
+/**
+ *  the MazeCell that avatar is at
+ */
+@property (strong,nonatomic) MazeCell *avatarMazeCell;
 
--(void)mazeAvatarMove:(MazeGraph *)mazeGraph inDirection:(NSString *)keyname fromLocation:(MazeCell *)avatarMazeCell toLocation:(MazeCell *)toCell;
+
+-(instancetype)initWithColor:(UIColor *)color size:(CGSize)size;
+
+-(instancetype)initWithColor:(UIColor *)color size:(CGSize)size avatarType:(mazeAvatarType)avatarType;
+
+/**
+ *  animate the movement for avatar escept for blackbox
+ *  Blackbox will use calculateAvatarNodePositionWithAvatarCell instead
+ *
+ *  @param squareLength the width of a tile
+ */
+-(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength;
+
+/**
+ *  convert avatarMazeCell's coordination to SKSpriteNode's position
+ *  this method does no animation, just change node's position
+ *
+ *  @param squareLength the width of a tile
+ */
+-(void)calculateAvatarNodePositionWithAvatarCell:(float)squareLength;
 
 /**
  *  CAUTION! balck box is move like teleporting, a new cell means the

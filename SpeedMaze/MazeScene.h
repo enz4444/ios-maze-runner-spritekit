@@ -28,11 +28,6 @@
 @property (strong,nonatomic) SKShapeNode *mazeLayout;
 
 /**
- *  the avatar that explore the maze
- */
-@property (strong,nonatomic) SKSpriteNode *avatar;
-
-/**
  *  mist as a fat line
  */
 @property (strong,nonatomic) SKShapeNode *mist;
@@ -43,10 +38,6 @@
  */
 @property (strong,nonatomic) NSMutableSet *visibleCells;
 
-/**
- *  the MazeCell that avatar is at
- */
-@property (strong,nonatomic) MazeCell *avatarMazeCell;
 
 /**
  *  everything else about avatar, e.g. its skill

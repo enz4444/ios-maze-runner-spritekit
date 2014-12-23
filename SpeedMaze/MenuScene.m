@@ -84,6 +84,42 @@
 
 -(void)didMoveToView:(SKView *)view {
     NSLog(@"menu scene: %f, %f, %f, %f",self.frame.origin.x,self.frame.origin.y,self.frame.size.width,self.frame.size.height);
+    SKSpriteNode *avatar = [[SKSpriteNode alloc] initWithColor:[UIColor blackColor] size:CGSizeMake(20, 20)];
+    avatar.color = [SKColor whiteColor];
+    [self addChild:avatar];
+
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathMoveToPoint(path, NULL, 0, 0);
+    CGPathAddLineToPoint(path, NULL, 50, 100);
+    SKAction *followline = [SKAction followPath:path asOffset:YES orientToPath:NO duration:1.0];
+    SKAction *reversedLine = [followline reversedAction];
+    reversedLine.speed = 1;
+    UIBezierPath *square = [UIBezierPath bezierPathWithRect:CGRectMake(100, 100, 300, 300)];
+    SKAction *followSquare = [SKAction followPath:square.CGPath asOffset:YES orientToPath:NO duration:5.0];
+
+    UIBezierPath *circle = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, 200, 200) cornerRadius:200];
+    SKAction *followCircle = [SKAction followPath:circle.CGPath asOffset:YES orientToPath:NO duration:5.0];
+    SKAction *moveBottomLeft = [SKAction moveTo:CGPointMake(100,100) duration:2.0];
+    SKAction *moveRight = [SKAction moveByX:50 y:50 duration:0.5];
+    SKAction *sequence = [SKAction sequence:@[moveRight, moveBottomLeft]];
+    SKAction *endlessAction = [SKAction repeatActionForever:sequence];
+    
+    //[avatar runAction:[SKAction sequence:@[followline, reversedLine, followSquare, followCircle,endlessAction]]];
+    SKAction *test;
+    __block int i = 5;
+    SKAction *blockAction = [SKAction runBlock:^(void){
+        while (i) {
+            i--;
+            [avatar runAction:[SKAction sequence:@[followline, reversedLine,blockAction]]];
+        }
+    }];
+    test = [SKAction sequence:@[followline, reversedLine]];
+    [avatar runAction:test completion:^(void){
+        while (i) {
+            i--;
+            [avatar runAction:moveRight];
+        }
+    }];
     
     
 }

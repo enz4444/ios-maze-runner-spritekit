@@ -30,8 +30,6 @@
 #define ZenMyBluenWithAlpha(alphaValue) UIColorFromRGBA(0x67C8FF, alphaValue)
 
 
-
-
 //application screen width
 #define ZenSW [[UIScreen mainScreen] applicationFrame].size.width
 

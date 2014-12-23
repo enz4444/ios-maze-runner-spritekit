@@ -12,7 +12,6 @@
 
 -(void)didMoveToView:(SKView *)view {
     NSLog(@"%f, %f, %f, %f",self.frame.origin.x,self.frame.origin.y,self.frame.size.width,self.frame.size.height);
-
     /* Setup your scene here */
     /*
     SKLabelNode *myLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
