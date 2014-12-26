@@ -98,7 +98,7 @@
             if (!searchCell) {
                 searchCell = tempCell;
             }
-            else if (searchCell.discorver > tempCell.discorver){
+            else if (searchCell.discorver < tempCell.discorver){
                 searchCell = tempCell;
             }
         }

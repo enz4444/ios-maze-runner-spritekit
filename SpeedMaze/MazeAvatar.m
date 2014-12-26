@@ -16,15 +16,11 @@
 
 @property (strong,nonatomic) NSMutableArray *undoStepArray;
 @property (strong,nonatomic) NSMutableArray *undoDirectionArray;
-@property (strong,nonatomic) NSMutableArray *snailTrailArray;
+@property (strong,nonatomic) NSMutableSet *snailTrailSet;
 
 @end
 
 @implementation MazeAvatar
-
-/**
- *  Avatar's speed
- */
 
 -(instancetype)initWithColor:(UIColor *)color size:(CGSize)size{
     self = [super initWithColor:color size:size];
@@ -52,17 +48,17 @@
         NSLog(@"avatar is giraffe");
         //do nothing, giraffe has only passive skill
         self.color = [SKColor brownColor];
-        self.mazeAvatarSpeed = 1.5;
+        self.mazeAvatarSpeed = 10.0;
     }
     else if(self.avatarType == mazeAvatarSnail){
         NSLog(@"avatar is snail");
-        self.snailTrailArray = [NSMutableArray array];
+        self.snailTrailSet = [NSMutableSet set];
         self.color = [SKColor whiteColor];
-        self.mazeAvatarSpeed = 1.2;
+        self.mazeAvatarSpeed = 5.0;
     }
     else if (self.avatarType == mazeAvatarSunday){
         self.color = [SKColor yellowColor];
-        self.mazeAvatarSpeed = 2.0;
+        self.mazeAvatarSpeed = 8.0;
     }
     return self;
 }
@@ -117,20 +113,21 @@
 
 -(void)mazeAvatarSnailAddAMazeCell:(MazeCell *)aCell{
     NSAssert(self.avatarType == mazeAvatarSnail, ([NSString stringWithFormat:@"The bnail action should not perform on this avatar type: %i", self.avatarType]));
-    if (![self.snailTrailArray containsObject:aCell]) {
-        [self.snailTrailArray addObject:aCell];
+    if (![self.snailTrailSet containsObject:aCell]) {
+        [self.snailTrailSet addObject:aCell];
     }
     else{
         //already contain a trail, later can reset time counter to vaporize this cell
     }
+    //NSLog(@"snail trail amount:%lu",self.snailTrailSet.count);
 }
 
 -(void)mazeAvatarSnailMarkAllTrailMazeCellToVisiable{
     NSAssert(self.avatarType == mazeAvatarSnail, ([NSString stringWithFormat:@"The snail action should not perform on this avatar type: %i", self.avatarType]));
-    for (MazeCell *cell in self.snailTrailArray) {
+    for (MazeCell *cell in self.snailTrailSet) {
         cell.hasMist = NO;
     }
-
+    //NSLog(@"snail trail amount:%lu",self.snailTrailSet.count);
 }
 
 /**
@@ -140,28 +137,47 @@
  */
 -(void)calculateAvatarNodePositionWithAvatarCell:(float)squareLength{
     self.position = CGPointMake(squareLength/2 + self.avatarMazeCell.x * squareLength, squareLength/2 + self.avatarMazeCell.y * squareLength);
+    
 }
 
 /**
- *  animate the movement for avatar escept for blackbox
+ *  animate the movement for avatar except for blackbox
  *  Blackbox will use calculateAvatarNodePositionWithAvatarCell instead
  *
  *  @param squareLength the width of a tile
  */
--(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength{
+-(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength times:(int)times{
     //use SKAction to animte the movement action
     //delta x or y is self.avatarMazeCell's position(new) minus self.postion(old)
-    float deltaX = (squareLength/2 + self.avatarMazeCell.x * squareLength) - self.position.x;
-    float deltaY = (squareLength/2 + self.avatarMazeCell.y * squareLength) - self.position.y;
+    float deltaX = ((squareLength/2 + self.avatarMazeCell.x * squareLength) - self.position.x) / times;
+    float deltaY = ((squareLength/2 + self.avatarMazeCell.y * squareLength) - self.position.y)/times;
     SKAction *beforeAnimation = [SKAction runBlock:^{
         self.isAnimating = YES;
     }];
     SKAction *afterAnimation = [SKAction runBlock:^{
         self.isAnimating = NO;
     }];
+    SKAction *callDelegate = [SKAction runBlock:^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            id<MazeAvatarAnimationDelegate>delegate = self.animationDelegate;
+            if ([delegate respondsToSelector:@selector(mazeAvatarAnimationDidFinishOneTileMovment)]) {
+                if (false) {
+                    [delegate mazeAvatarAnimationDidFinishOneTileMovment];
+                }
+                else{
+                    [delegate mazeAvatarAnimationDidFinishRepeatMovement];
+                }
+            }
+        });
+    }];
+    
     SKAction *moveTo = [SKAction moveByX:deltaX y:deltaY duration:1.0];
     moveTo.speed = self.mazeAvatarSpeed;
-    SKAction *actionSet = [SKAction sequence:@[beforeAnimation,moveTo,afterAnimation]];
+    
+    SKAction *moveRepeat = [SKAction repeatAction:moveTo count:times];
+    SKAction *moveGroup = [SKAction sequence:@[moveRepeat,callDelegate]];
+    SKAction *actionSet = [SKAction sequence:@[beforeAnimation,moveGroup,afterAnimation]];
+
     [self runAction:actionSet];
 }
 

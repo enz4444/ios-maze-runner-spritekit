@@ -58,8 +58,6 @@
         
         //gamepad view
         SKView * controlpadSKView = [[SKView alloc] initWithFrame:CGRectMake(0, ZenSW, ZenSW, ZenSW/3)];
-
-        
         
         //gamepad scene
         GamepadScene *gamepadScene = [[GamepadScene alloc] initWithSize:CGSizeMake(ZenSW, ZenSW/3)];
@@ -160,14 +158,25 @@
         self.mazeMaze = [[MazeGenerator alloc] initMazeWithWidth:width height:height];
         [self.mazeMaze defaultMaze];
         
+        /*
+         scene type: N x N
+         N<50
+         one screen fits all -> SKSceneScaleModeAspectFit
+         otherwise square lenth no les than width/15
+         
+         */
+        
         //fade in mazeScene
         self.mazeScene = [[MazeScene alloc] initWithMaze:self.mazeMaze andScreenSize:CGSizeMake(self.view.frame.size.width, self.view.frame.size.width) andAvatarType:avataType];
-        self.mazeScene.gameConditionDelegate = self;
-        self.mazeScene.scaleMode = SKSceneScaleModeAspectFit;
-        self.mazeScene.backgroundColor = [UIColor whiteColor];
-        SKTransition *reveal = [SKTransition fadeWithDuration:1];
-        [self.mazeSKView presentScene:self.mazeScene transition:reveal];
+        
+        self.mazeScene.scaleMode = SKSceneScaleModeAspectFill;
 
+        self.mazeScene.gameConditionDelegate = self;
+        self.mazeScene.backgroundColor = [UIColor whiteColor];
+        SKTransition *reveal = [SKTransition fadeWithDuration:0.1];
+        [self.mazeSKView presentScene:self.mazeScene transition:reveal];
+        
+        
         //print solution path
         if (ZenDebug>=3) {
             for (MazeCell *step in self.mazeMaze.path) {

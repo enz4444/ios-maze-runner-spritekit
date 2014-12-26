@@ -28,15 +28,18 @@ typedef NS_ENUM(uint32_t, mazeAvatarType)
     mazeAvatarUndefined              = 0x0
 };
 
-/**
- *  idealy, return instance of an avatar according to type
- */
+@protocol MazeAvatarAnimationDelegate;
+
 @interface MazeAvatar : SKSpriteNode
+
+@property (weak,nonatomic) id<MazeAvatarAnimationDelegate> animationDelegate;
+
+@property (strong,readonly,nonatomic) NSMutableSet *snailTrailSet;
 
 /**
  *  the type of avatar in currect maze
  */
-@property (assign, nonatomic) mazeAvatarType avatarType;
+@property (assign,nonatomic) mazeAvatarType avatarType;
 
 @property (assign,readonly,nonatomic) float mazeAvatarSpeed;
 
@@ -59,7 +62,7 @@ typedef NS_ENUM(uint32_t, mazeAvatarType)
  *
  *  @param squareLength the width of a tile
  */
--(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength;
+-(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength times:(int)times;
 
 /**
  *  convert avatarMazeCell's coordination to SKSpriteNode's position
@@ -105,5 +108,13 @@ typedef NS_ENUM(uint32_t, mazeAvatarType)
  */
 -(void)mazeAvatarSnailMarkAllTrailMazeCellToVisiable;
 
+
+@end
+
+@protocol MazeAvatarAnimationDelegate <NSObject>
+
+-(void)mazeAvatarAnimationDidFinishOneTileMovment;
+
+-(void)mazeAvatarAnimationDidFinishRepeatMovement;
 
 @end

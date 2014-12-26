@@ -13,9 +13,11 @@
 
 @protocol MazeGameMenuDelegate;
 
-@interface MenuScene : SKScene
+@interface MenuScene : SKScene <UITextFieldDelegate>
 
 @property (weak,nonatomic) id<MazeGameMenuDelegate> gameMenudelegate;
+
+@property (weak,nonatomic) UITextField *mazeWidth;
 
 -(instancetype)initMazeGameMenuWithSize:(CGSize)CGSize;
 
