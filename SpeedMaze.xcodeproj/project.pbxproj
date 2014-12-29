@@ -20,6 +20,7 @@
 		B38563D61A219C8800525728 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38563D51A219C8800525728 /* UIKit.framework */; };
 		B38563D81A219C8E00525728 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38563D71A219C8E00525728 /* Foundation.framework */; };
 		B38563DA1A219C9400525728 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38563D91A219C9400525728 /* CoreFoundation.framework */; };
+		B3C824CF1A50D84F009F88F5 /* MazeUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C824CE1A50D84F009F88F5 /* MazeUtilities.m */; };
 		B3EEB4801A1EA87B006DE679 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B3EEB47F1A1EA87B006DE679 /* main.m */; };
 		B3EEB4831A1EA87B006DE679 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B3EEB4821A1EA87B006DE679 /* AppDelegate.m */; };
 		B3EEB4861A1EA87B006DE679 /* GameScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B3EEB4851A1EA87B006DE679 /* GameScene.m */; };
@@ -62,6 +63,8 @@
 		B38563D51A219C8800525728 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		B38563D71A219C8E00525728 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B38563D91A219C9400525728 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		B3C824CD1A50D80B009F88F5 /* MazeUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MazeUtilities.h; sourceTree = "<group>"; };
+		B3C824CE1A50D84F009F88F5 /* MazeUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MazeUtilities.m; sourceTree = "<group>"; };
 		B3EEB47A1A1EA87B006DE679 /* SpeedMaze.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpeedMaze.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3EEB47E1A1EA87B006DE679 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B3EEB47F1A1EA87B006DE679 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -150,6 +153,8 @@
 				B326DC811A44CBFC00F5E4A2 /* MazeAvatar.m */,
 				B3EEB4A81A1EA8C5006DE679 /* MazeCell.h */,
 				B3EEB4A91A1EA8C5006DE679 /* MazeCell.m */,
+				B3C824CD1A50D80B009F88F5 /* MazeUtilities.h */,
+				B3C824CE1A50D84F009F88F5 /* MazeUtilities.m */,
 				B3EEB4AA1A1EA8C5006DE679 /* MazeGenerator.h */,
 				B3EEB4AB1A1EA8C5006DE679 /* MazeGenerator.m */,
 				B3FB71F71A3BE8E600C270A8 /* GamepadScene.h */,
@@ -337,6 +342,7 @@
 				B326DC851A451AF100F5E4A2 /* MenuScene.m in Sources */,
 				B3EEB48B1A1EA87B006DE679 /* GameViewController.m in Sources */,
 				B326DC821A44CBFC00F5E4A2 /* MazeAvatar.m in Sources */,
+				B3C824CF1A50D84F009F88F5 /* MazeUtilities.m in Sources */,
 				B3EEB4831A1EA87B006DE679 /* AppDelegate.m in Sources */,
 				B3EEB4AD1A1EA8C5006DE679 /* MazeGenerator.m in Sources */,
 				B3138E2F1A1F298A00AE1142 /* MazeGraph.m in Sources */,

@@ -18,6 +18,14 @@
 @property (strong,nonatomic) NSMutableArray *undoDirectionArray;
 @property (strong,nonatomic) NSMutableSet *snailTrailSet;
 
+/**
+ *  It's like
+ *  -(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength times:(int)times;
+ *  but add a subject, can be either map or avartar
+ *
+ */
+-(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength times:(int)times subject:(SKSpriteNode *)subject;
+
 @end
 
 @implementation MazeAvatar
@@ -179,6 +187,10 @@
     SKAction *actionSet = [SKAction sequence:@[beforeAnimation,moveGroup,afterAnimation]];
 
     [self runAction:actionSet];
+}
+
+-(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength times:(int)times subject:(SKSpriteNode *)subject{
+    
 }
 
 

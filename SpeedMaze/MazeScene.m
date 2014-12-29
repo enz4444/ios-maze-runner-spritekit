@@ -108,6 +108,7 @@ static float squareLength;
 static float squareWallThickness;
 static float worldWidth;
 static int cnt;
+static float scrollableBoundary;
 
 -(void)didMoveToView:(SKView *)view{
     [super didMoveToView:view];
@@ -181,21 +182,24 @@ static int cnt;
     square.path = [wallPath CGPath];
     
     //thickness of walls
-    square.lineWidth = squareLength / 5.0;
+    square.lineWidth = squareWallThickness;
     square.lineCap = kCGLineCapSquare;
     square.strokeColor = [SKColor whiteColor];
     //square.fillColor = [SKColor clearColor];
+    
     SKSpriteNode *back = [SKSpriteNode spriteNodeWithColor:[UIColor blueColor] size:square.frame.size];
     back.anchorPoint = CGPointMake(0,0);
     [back addChild:square];
     self.mazeLayout = back;
-    
+    self.mazeLayout.anchorPoint = CGPointMake(0, 0);
     NSLog(@"drawAllWallsAsOneNode: %f, %f, %f, %f",square.frame.origin.x,square.frame.origin.y,square.frame.size.width,square.frame.size.height);
     
     [self addChild:self.mazeLayout];
 }
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    CGPoint avatarPositionInMap = [self.visionNode convertPoint:self.mazeAvatar.position toNode:self.mazeMap];
+    NSLog(@"avatarPositionInMap: (%f,%f)",avatarPositionInMap.x,avatarPositionInMap.y);
     /*
     for (UITouch *touch in touches) {
         //testing, add red bound black square onto touch location
@@ -221,21 +225,21 @@ static int cnt;
     self.visionCells = [NSMutableSet set];
     self.maskChildren = [NSMutableSet set];
     /*
-     * squareLength is no longer than screenSize/15, can be less but can't be more
+     * squareLength is no longer than screenSize/16, can be less but can't be more
      */
-    if (maze.mazeGraph.width <= 15) {
+    if (maze.mazeGraph.width <= 16) {
         worldWidth = screenSize.width;
         squareLength = screenSize.width / self.theMaze.mazeGraph.width;
-        squareWallThickness = squareLength / 10.0;
+        squareWallThickness = squareLength / 5.0;
     }
     else{
-        // world width is > 15
-        squareLength = screenSize.width / 15;
-        squareWallThickness = squareLength / 10.0;
+        // world width is > 16
+        squareLength = screenSize.width / 16;
+        squareWallThickness = squareLength / 5.0;
         worldWidth = squareLength * self.theMaze.mazeGraph.width;
         NSLog(@"initwithmaze: %f %f",squareLength,worldWidth);
     }
-    
+    scrollableBoundary = squareLength * 3;//cause avatar's position is in center
     return self;
 }
 
@@ -244,7 +248,7 @@ static int cnt;
     if (self == nil) {
         return self;
     }
-    self.mazeAvatar = [[MazeAvatar alloc] initWithColor:[UIColor blackColor] size:CGSizeMake(squareLength*0.6, squareLength*0.6) avatarType:avatarType];
+    self.mazeAvatar = [[MazeAvatar alloc] initWithColor:[UIColor blackColor] size:CGSizeMake(squareLength*0.7, squareLength*0.7) avatarType:avatarType];
     self.mazeAvatar.animationDelegate = self;
     return self;
 }
@@ -348,7 +352,9 @@ static int cnt;
          [canvas setSize:CGSizeMake(canvas.texture.size.width, canvas.texture.size.height)];
          canvas.anchorPoint = CGPointMake(0, 0);
          */
-        SKTexture *cacheTexture =[self.view textureFromNode:self.mazeLayout];
+        
+        //need to crop, otherwise the layout's frame will slight distort because the out bounded stroke
+        SKTexture *cacheTexture =[self.view textureFromNode:self.mazeLayout crop:CGRectMake(0, 0, self.mazeLayout.frame.size.width-squareWallThickness, self.mazeLayout.frame.size.height-squareWallThickness)];
         SKSpriteNode *mazeMap = [[SKSpriteNode alloc] initWithTexture:cacheTexture color:[UIColor clearColor] size:CGSizeMake(worldWidth, worldWidth)];//self.size];
         mazeMap.anchorPoint = CGPointMake(0, 0);
         self.mazeMap = mazeMap;
@@ -376,18 +382,20 @@ static int cnt;
         
         if (self.mazeAvatar == nil) {
             NSLog(@"MazeScene: avatar is nil");
-            self.mazeAvatar = [[MazeAvatar alloc] initWithColor:[UIColor blackColor] size:CGSizeMake(squareLength*0.6, squareLength*0.6) avatarType:mazeAvatarBlackBox];
+            self.mazeAvatar = [[MazeAvatar alloc] initWithColor:[UIColor blackColor] size:CGSizeMake(squareLength*0.7, squareLength*0.7) avatarType:mazeAvatarBlackBox];
             self.mazeAvatar.animationDelegate = self;
         }
         // mark the original maze cell that avatar is at
         self.mazeAvatar.avatarMazeCell = [self.theMaze.mazeGraph getCellAtX:0 y:0];
         //place avatar at (0,0)
         [self.mazeAvatar calculateAvatarNodePositionWithAvatarCell:squareLength];
-        self.mazeAvatar.zPosition = 2;
+        self.mazeAvatar.zPosition = 5;
+        //self.mazeAvatar.anchorPoint = CGPointMake(0, 0);
         [self addChild:self.mazeAvatar];
         //[self.mazeMap addChild:self.mazeAvatar];
-        
+        //[self.mazeAvatar addChild:self.mazeMap];
         //test for SKCropNode
+        
         SKCropNode *visionNode = [SKCropNode node];
         [visionNode addChild:self.mazeMap];
         [visionNode setMaskNode:self.cropTileContainer];
@@ -438,15 +446,92 @@ static int cnt;
         }
         
     }
-    //self.view.layer.mask
-    //SkCropNode movement
+    //[self cameraMovementDetermine];
+    
+    float deltaX = self.mazeAvatar.position.x - self.visionNode.position.x;
+    float deltaY = self.mazeAvatar.position.y - self.visionNode.position.y;
+    self.visionNode.position = self.mazeAvatar.position;
+    self.mazeMap.position = CGPointMake(self.mazeMap.position.x - deltaX, self.mazeMap.position.y - deltaY);
+    self.cropTileContainer.position = self.mazeMap.position;
+    
+    ++cnt;
+}
+
+/**
+ *  boundary is the 4th squareLength from each of the edges
+ *  When avatar is reached the bounday, if map is scrollable, then map moves
+ *  else, avtar moves
+ *  scrollableBoundary is in initWithMaze, = squareLength * 4
+ */
+-(void)cameraMovementDetermine{
+    CGPoint avatarPositionInMap = [self.visionNode convertPoint:self.mazeAvatar.position toNode:self.mazeMap];
+    
+    BOOL isMapMove = false;
+    //right edge scrollable detection
+    if ((self.size.width - self.mazeAvatar.position.x) <= scrollableBoundary) {
+        if ((self.mazeMap.size.width - avatarPositionInMap.x) > scrollableBoundary) {
+            // there is map area outside the boundary, map can scroll
+            isMapMove = true;
+            NSLog(@"map move right");
+        }
+        else{
+            // there is no extra map area outside the scene, avata can move
+        }
+    }
+    //left edge
+    else if (self.mazeAvatar.position.x <= scrollableBoundary) {
+        if ( avatarPositionInMap.x > scrollableBoundary) {
+            // there is map area outside the boundary, map can scroll
+            isMapMove = true;
+            NSLog(@"map move left");
+        }
+        else{
+            // there is no extra map area outside the scene, avata can move
+        }
+    }
+    //top edge
+    else if((self.size.height - self.mazeAvatar.position.y) <= scrollableBoundary){
+        if ((self.mazeMap.size.height - avatarPositionInMap.y) > scrollableBoundary) {
+            // there is map area outside the boundary, map can scroll
+            isMapMove = true;
+            NSLog(@"map move top");
+        }
+        else{
+            // there is no extra map area outside the scene, avata can move
+        }
+    }
+    //bottom edge
+    else if (self.mazeAvatar.position.y <= scrollableBoundary) {
+        if ( avatarPositionInMap.y > scrollableBoundary) {
+            // there is map area outside the boundary, map can scroll
+            isMapMove = true;
+            NSLog(@"map move bottom");
+        }
+        else{
+            // there is no extra map area outside the scene, avata can move
+        }
+    }
+    
+    if (isMapMove) {
+        [self camearMovementMapMove];
+    }
+    else{
+        [self cameraMovementAvatarMove];
+    }
+}
+
+-(void)cameraMovementAvatarMove{
     float deltaX = self.mazeAvatar.position.x - self.visionNode.position.x;
     float deltaY = self.mazeAvatar.position.y - self.visionNode.position.y;
     self.visionNode.position = self.mazeAvatar.position;
     self.mazeMap.position = CGPointMake(self.mazeMap.position.x - deltaX, self.mazeMap.position.y - deltaY);
     self.cropTileContainer.position = self.mazeMap.position; //these two position should be synchronize, to acheive the tile shadow/masking/mist effect
-    ++cnt;
-    //[self centerOnNode:self.mazeAvatar];
+}
+-(void)camearMovementMapMove{
+    float deltaX = self.mazeAvatar.position.x - self.visionNode.position.x;
+    float deltaY = self.mazeAvatar.position.y - self.visionNode.position.y;
+    self.mazeAvatar.position = self.visionNode.position; //re-assign the original/last position back to mazeAvtar,because the map should move. or do it in MazeAvtar's method
+    self.mazeMap.position = CGPointMake(self.mazeMap.position.x - deltaX, self.mazeMap.position.y - deltaY);
 }
 
 /**

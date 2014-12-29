@@ -169,7 +169,7 @@
         //fade in mazeScene
         self.mazeScene = [[MazeScene alloc] initWithMaze:self.mazeMaze andScreenSize:CGSizeMake(self.view.frame.size.width, self.view.frame.size.width) andAvatarType:avataType];
         
-        self.mazeScene.scaleMode = SKSceneScaleModeAspectFill;
+        self.mazeScene.scaleMode = SKSceneScaleModeAspectFit;
 
         self.mazeScene.gameConditionDelegate = self;
         self.mazeScene.backgroundColor = [UIColor whiteColor];
