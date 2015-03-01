@@ -87,6 +87,9 @@
 -(instancetype)initWithMaze:(MazeGenerator *)maze andScreenSize:(CGSize)screenSize;
 
 /**
+ *  default init, need to pass in the screen size to
+ *  calculate some static vaules at
+ *  the beginning.
  *  like above
  *
  *  @param maze

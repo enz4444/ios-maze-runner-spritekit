@@ -18,13 +18,6 @@
 @property (strong,nonatomic) NSMutableArray *undoDirectionArray;
 @property (strong,nonatomic) NSMutableSet *snailTrailSet;
 
-/**
- *  It's like
- *  -(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength times:(int)times;
- *  but add a subject, can be either map or avartar
- *
- */
--(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength times:(int)times subject:(SKSpriteNode *)subject;
 
 @end
 
@@ -189,8 +182,42 @@
     [self runAction:actionSet];
 }
 
--(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength times:(int)times subject:(SKSpriteNode *)subject{
+-(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength times:(int)times mazeMap:(SKSpriteNode *)mazeMap cropTileContainer:(SKSpriteNode *)cropTileContainer{
+    //use SKAction to animte the movement action
+    //delta x or y is self.avatarMazeCell's position(new) minus self.postion(old)
+    float deltaX = (self.avatarMazeCell.x * squareLength + (mazeMap.position.x + squareLength/2)) / times;
+    float deltaY = (self.avatarMazeCell.y * squareLength + (mazeMap.position.y + squareLength/2)) / times;
+    //NSLog(@"mazeMap position: %f,%f", mazeMap.position.x,mazeMap.position.y);
+    //NSLog(@"mazeMap delta: %f,%f", deltaX,deltaY);
+
+    SKAction *beforeAnimation = [SKAction runBlock:^{
+        self.isAnimating = YES;
+    }];
+    SKAction *afterAnimation = [SKAction runBlock:^{
+        self.isAnimating = NO;
+    }];
+    SKAction *callDelegate = [SKAction runBlock:^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            id<MazeAvatarAnimationDelegate>delegate = self.animationDelegate;
+            if ([delegate respondsToSelector:@selector(mazeAvatarAnimationDidFinishOneTileMovment)]) {
+                if (false) {
+                    [delegate mazeAvatarAnimationDidFinishOneTileMovment];
+                }
+                else{
+                    [delegate mazeAvatarAnimationDidFinishRepeatMovement];
+                }
+            }
+        });
+    }];
+    SKAction *moveTo2 = [SKAction moveByX:deltaX y:deltaY duration:1.0];
+    moveTo2.speed = self.mazeAvatarSpeed;
+    SKAction *moveTo = [moveTo2 reversedAction];
     
+    SKAction *moveRepeat = [SKAction repeatAction:moveTo count:times];
+    SKAction *moveGroup = [SKAction sequence:@[moveRepeat,callDelegate]];
+    SKAction *actionSet = [SKAction sequence:@[beforeAnimation,moveGroup,afterAnimation]];
+    
+    [mazeMap runAction:actionSet];
 }
 
 

@@ -65,6 +65,13 @@ typedef NS_ENUM(uint32_t, mazeAvatarType)
 -(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength times:(int)times;
 
 /**
+ *  It's like
+ *  -(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength times:(int)times;
+ *  but add a subject, can be either map or avartar,
+ */
+-(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength times:(int)times mazeMap:(SKSpriteNode *)mazeMap cropTileContainer:(SKSpriteNode *)cropTileContainer;
+
+/**
  *  convert avatarMazeCell's coordination to SKSpriteNode's position
  *  this method does no animation, just change node's position
  *

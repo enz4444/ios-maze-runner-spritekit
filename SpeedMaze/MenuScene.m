@@ -93,6 +93,59 @@
 }
 
 -(void)didMoveToView:(SKView *)view {
+    /*
+    NSLog(@"Michael's interview question:");
+    NSString *inputString = @"The quick brown fox jumped over the lazy brown dog’s back";
+    NSArray *words = [inputString componentsSeparatedByString: @" "];
+    NSMutableDictionary *collection = [NSMutableDictionary dictionary];
+    
+    //NSMutableSet *temp = [NSMutableSet set];
+    //NSMutableSet *wordLengthCollection = [NSMutableSet set];
+    for (NSString *aWord in words) {
+        // if not in collection
+        if (![collection valueForKey:aWord]) {
+            [collection setValue:[NSNumber numberWithLong:1] forKey:aWord];
+        }
+        // if exists, increame the count
+        else{
+            NSNumber *get = [collection valueForKey:aWord];
+            long result = [get integerValue] + 1;
+            NSNumber *back = [NSNumber numberWithLong:result];
+            [collection setValue:back forKey:aWord];
+            
+            // atomicInt = get(...)
+            // atomicInt++
+        }
+        
+        
+    }
+    [wordLengthCollection unionSet:temp];
+    NSLog(@"1: Dictionary contains: %@ \nwordLengthCollection: %@", collection, wordLengthCollection);
+    */
+    
+    // 10% : $0 to $20,000 //20k -> 10%
+    // 15% : $20,000 to $40,000// 40k -> ?% $35 CEILING floor
+    // 20% : $40,000 and over
+    // 5% : $10,000 to $42,000
+    //naming
+    // percentage: leftBractek to rightBractek,diff <-set or array of dictionary
+//    e.g, assume brackets are ordered, not intercept each other
+//    B.bracket = 40000
+//    B.percent = 20
+//    income = 10k
+//    tax = 0
+//    while (there is a bracket B, income > B.backet) {
+//        tax += (income -= B.bracket) * B.percent
+//    }
+//    ---------------------------------
+    // 10% : $0 to $20,000
+    // 15% : $20,000 to (income > $20,000)? income - $20,000 : 0
+    // 20% : $40,000 and (income > $40,000)? income - $40,000 : 0
+
+    
+    
+    
+    
     NSLog(@"menu scene: %f, %f, %f, %f",self.frame.origin.x,self.frame.origin.y,self.frame.size.width,self.frame.size.height);
     UITextField *mazeWidth = [[UITextField alloc]initWithFrame:CGRectMake(0,0, 100, 40)];
     mazeWidth.center = CGPointMake(160, 240);

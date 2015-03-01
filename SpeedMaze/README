@@ -1,0 +1,20 @@
+MazeScene node tree:
+self
+|
+self.vision(cropNode)
+|                                \(mask)
+self.mazeMap(spriteNode)   self.cropTileContainer(spriteNode)
+                                  |
+                            self.maskChildren(setOfSpriteNode)
+
+
+
+
+
+ratio:
+equal ratio:
+avatarP.x / self.size.width = avatarM.x / self.mazeMap.width
+
+always:
+avatarP.x / self.size.width >= avatarM.x / self.mazeMap.width
+self.mazeMap.with as分母it‘s always bigger

@@ -110,12 +110,252 @@ static float worldWidth;
 static int cnt;
 static float scrollableBoundary;
 
+static bool isScrolling;
+
+static CGPoint topRightBoundaryCrossPoint;
+static CGPoint bottomLeftBoundaryCrossPoint;
+
+/**
+ *  Caution: camera movement algorithm!
+ *  It was moving avatar only, then cropNode sync with avtar's position, since
+ *  the mazeMap and cropTileContainer follow the crop Node, we need to the mazeMap
+ *  and cropTileContainer in reverse direction. It's doing so by first move the
+ *  mazeMap, then cropTileContainer sync with mazeMap's position.
+ *
+ *  Now,here is the new algorithm:
+ *  Instead of moving avatar only, the new algorithm is moving mazeMap only.
+ *  Then it moves the avatar accordingly. By moving mazeMap only(first), it enable
+ *  a feature: either move avatar or not. If it's not scrolling, adjust avatar's
+ *  position by mazeMap's position(like the old algorithm, but instead of avatar's
+ *  position -> mazeMap's position, new algorithm it's mazeMap's position -> avtar's
+ *  position). If it's scrolling, then leave avtar alone by just moving mazeMap, such
+ *  the map will scroll.
+ *
+ */
+-(void)update:(NSTimeInterval)currentTime{
+    [super update:currentTime];
+    /*
+     
+     */
+    if (cnt == 1) // can be cnt == 0 on XCode 6.0
+    {
+        isScrolling = false;
+        //below codes was from didMoveToView, but need to "textureFromNode" so
+        //move them to here
+        //[self drawAllWallsAsOneNode];
+        //[self drawAllWallsWithCellWallTypes];
+        //[self drawSolutionPath];
+        
+        //get texture
+        /*
+         SKTexture *cacheTexture =[ self.view textureFromNode:container];
+         canvas.texture = cacheTexture;
+         [canvas setSize:CGSizeMake(canvas.texture.size.width, canvas.texture.size.height)];
+         canvas.anchorPoint = CGPointMake(0, 0);
+         */
+        
+        //need to crop, otherwise the layout's frame will slight distort because the out bounded stroke
+        SKTexture *cacheTexture =[self.view textureFromNode:self.mazeLayout crop:CGRectMake(0, 0, self.mazeLayout.frame.size.width-squareWallThickness, self.mazeLayout.frame.size.height-squareWallThickness)];
+        //test: worldWidth to enlarge, self.size to fit
+        SKSpriteNode *mazeMap = [[SKSpriteNode alloc] initWithTexture:cacheTexture color:[UIColor clearColor] size:self.size];//CGSizeMake(worldWidth, worldWidth)];//self.size];
+        mazeMap.anchorPoint = CGPointMake(0, 0);
+        self.mazeMap = mazeMap;
+        [self.mazeLayout removeFromParent];
+        self.mazeLayout = nil;
+        self.mazeMap.zPosition = 0;
+        //[self addChild:self.mazeMap]; //comment out for testing SKCropNode
+        
+        //test: worldWidth to enlarge, self.size to fit
+        SKSpriteNode *cropTileContainer = [[SKSpriteNode alloc] initWithColor:[UIColor clearColor] size:self.size];//CGSizeMake(worldWidth, worldWidth)];//self.size];
+        //NSLog(@"testing size0: %f", squareLength);
+        //NSLog(@"testing size: %f ", self.size.width);
+        cropTileContainer.anchorPoint = CGPointMake(0, 0);
+        self.cropTileContainer = cropTileContainer;
+        //NSLog(@"testing size2: %f %f", self.cropTileContainer.size.width, self.size.width);
+        
+        
+        /*//testing, add mask tile/grid to cropTileContrainer
+         SKSpriteNode *tile5_5 = [[SKSpriteNode alloc] initWithColor:[UIColor blackColor] size:CGSizeMake(squareLength, squareLength*5)];
+         tile5_5.anchorPoint = CGPointMake(0, 0); //was anchor at center, now is (0,0) for better replacement according to maze's coordination and grids
+         tile5_5.position = CGPointMake(squareLength*4, squareLength*4);
+         [self.cropTileContainer addChild:tile5_5];
+         */
+        
+        self.backgroundColor = [SKColor blackColor];
+        
+        if (self.mazeAvatar == nil) {
+            NSLog(@"MazeScene: avatar is nil");
+            self.mazeAvatar = [[MazeAvatar alloc] initWithColor:[UIColor blackColor] size:CGSizeMake(squareLength*0.7, squareLength*0.7) avatarType:mazeAvatarBlackBox];
+            self.mazeAvatar.animationDelegate = self;
+        }
+        // mark the original maze cell that avatar is at
+        self.mazeAvatar.avatarMazeCell = [self.theMaze.mazeGraph getCellAtX:0 y:0];
+        //place avatar at (0,0)
+        [self.mazeAvatar calculateAvatarNodePositionWithAvatarCell:squareLength];
+        self.mazeAvatar.zPosition = 5;
+        //self.mazeAvatar.anchorPoint = CGPointMake(0, 0);
+        [self addChild:self.mazeAvatar];
+        //[self.mazeMap addChild:self.mazeAvatar];
+        //[self.mazeAvatar addChild:self.mazeMap];
+        //test for SKCropNode
+        
+        SKCropNode *visionNode = [SKCropNode node];
+        [visionNode addChild:self.mazeMap];
+        [visionNode setMaskNode:self.cropTileContainer];
+        self.visionNode = visionNode;
+        self.visionNode.zPosition = 1;
+        [self addChild:visionNode];
+        
+        self.mazeSceneAvatarIsMoving = NO;
+        self.mazeSceneAvatarCanContintuelyMoveInDirection = @"N";
+        
+        //setup avatar type and its basic
+        //just default for testing
+        //self.mazeAvatar = [[MazeAvatar alloc] initWithAvatarType:mazeAvatarBlackBox];
+        // testing giraffe
+        //self.mazeAvatar = [[MazeAvatar alloc] initWithAvatarType:mazeAvatarGiraffe];
+        // testing snail
+        //self.mazeAvatar = [[MazeAvatar alloc] initWithAvatarType:mazeAvatarSnail];
+        
+        
+        /*
+         *  must place this block inside didMoveToView, because it can't set mist
+         *  or other properties before they are initialized. Init the mazeAvatar's
+         *  property according to their types, and push the initial cell to array
+         *  accordingly
+         */
+        if (self.mazeAvatar.avatarType == mazeAvatarBlackBox) {
+            [self.mazeAvatar mazeAvatarBlackBoxStepAt:self.mazeAvatar.avatarMazeCell];
+            // draw mist after initial placement of avatar
+            [self drawMistAsOneNodeWithItsSightWithAvatarMazeCell:self.mazeAvatar.avatarMazeCell];
+        }
+        else if(self.mazeAvatar.avatarType == mazeAvatarGiraffe){
+            // draw mist after initial placement of avatar
+            //visionRangeMask is 3x3 visible area like Giraffe. Use for testing purpose on Sunday, or
+            // for giraffe's vision
+            SKSpriteNode *visionRangeMask = [SKSpriteNode spriteNodeWithColor:[SKColor blackColor] size:CGSizeMake(squareLength*3, squareLength*3)];
+            //[self.cropTileContainer addChild:visionRangeMask];
+            [visionRangeMask addChild:self.cropTileContainer];
+            [visionNode setMaskNode:visionRangeMask];
+            [self drawMistAsOneNodeWithItsSightWithAvatarMazeCell:self.mazeAvatar.avatarMazeCell];
+        }
+        else if (self.mazeAvatar.avatarType == mazeAvatarSnail){
+            [self.mazeAvatar mazeAvatarSnailAddAMazeCell:self.mazeAvatar.avatarMazeCell];
+            [self drawMistAsOneNodeWithItsSightWithAvatarMazeCell:self.mazeAvatar.avatarMazeCell];
+        }
+        else if (self.mazeAvatar.avatarType == mazeAvatarSunday){
+            self.mazeAvatar.color = [UIColor redColor];
+            self.cropTileContainer.color = [UIColor blackColor];
+        }
+        
+        //initial correction, since self.visionNode(SKCropNode has no anchorPoint
+        float deltaX = self.mazeAvatar.position.x - self.visionNode.position.x;
+        float deltaY = self.mazeAvatar.position.y - self.visionNode.position.y;
+        self.visionNode.position = self.mazeAvatar.position;
+        self.mazeMap.position = CGPointMake(self.mazeMap.position.x - deltaX, self.mazeMap.position.y - deltaY);
+        self.cropTileContainer.position = self.mazeMap.position;
+        NSLog(@"two deltaX: %f, %f",deltaX,deltaY);
+    }
+    
+    ++cnt;
+}
+
+-(void)didFinishUpdate{
+    [super didFinishUpdate];
+    float deltaX = self.mazeAvatar.position.x - self.visionNode.position.x;
+    float deltaY = self.mazeAvatar.position.y - self.visionNode.position.y;
+    self.visionNode.position = self.mazeAvatar.position;
+    self.mazeMap.position = CGPointMake(self.mazeMap.position.x - deltaX, self.mazeMap.position.y - deltaY);
+    self.cropTileContainer.position = self.mazeMap.position;
+    //NSLog(@"two deltaX: %f, %f",deltaX,deltaY);
+    
+}
+
+-(void)didEvaluateActionsTest{
+    //test [super didEvaluateActions];
+    /*
+     S = scrollingBoundary
+     N = avater in here is always moving,never map scroll
+     SSS
+     SNS
+     SSS
+     
+     mazeMap.x - container.x)<0 //left
+     >0 //right
+     MazeMap.y - container.y > 0 // up
+     <0 //down
+     When right:
+     If avatar.p.x + deltaX > scene.width - squareB
+     And not scrollable
+     Then avatar.p.x freeze not adding
+     
+     Avatar is always movable in center zone wrap by squareB
+     since avatar is not moving diagonally, at least one of the delta value
+     will be zero during movement
+     */
+    
+    //[self cameraMovementDetermine];
+    // if not scrolling, should move the avatar too(instead)
+    //NSLog(@"self.mazeMap.posistion (%f,%f)",self.mazeMap.position.x,self.mazeMap.position.y);
+    //if (![self isScrollingDetermine]) {
+    
+    float deltaX = self.mazeMap.position.x - self.cropTileContainer.position.x;
+    float deltaY = self.mazeMap.position.y - self.cropTileContainer.position.y;
+    float diffX;
+    float diffY;
+    BOOL canAvatarMove = YES; // when avatar can move, also means not scrolling
+    //if status, can only one of the statement be true
+    if (deltaX < -0.01) {
+        // moving left
+    }
+    else if (deltaX > 0.01){
+        // moving right
+        
+        if ((self.visionNode.position.x - deltaX) > (self.frame.size.width - scrollableBoundary)) {//(self.visionNode.position.x - deltaX) is the new value that will be updated
+            // reach the scrolling senstive area
+            CGPoint avatarPositionInMap = [self.visionNode convertPoint:self.mazeAvatar.position toNode:self.mazeMap];
+
+            if (((self.visionNode.position.x - deltaX) / self.size.width)) {
+                // these is more map area outside the right scene edge, do this by calculate the difference between avatar's position to sceen edge and avatar's position to map edge. if the map edge one is bigger, it is scrollable
+                
+            }
+        }
+    }
+    else if (deltaY > 0.01){
+        // moving up
+    }
+    else if (deltaY < -0.01){
+        // moving down
+    }
+    else{
+        //not moving
+    }
+    
+    if (canAvatarMove) {
+        self.visionNode.position = CGPointMake(self.visionNode.position.x - deltaX, self.visionNode.position.y - deltaY);
+        self.mazeAvatar.position = self.visionNode.position;
+        
+    }
+
+    
+    self.cropTileContainer.position = self.mazeMap.position;//always sync up
+
+    //testing, put this method after the position of mazeAvatar has been calculated
+    //[self cameraMovementDetermine]; not working
+    
+}
+
 -(void)didMoveToView:(SKView *)view{
     [super didMoveToView:view];
     self.backgroundColor = [SKColor blueColor];//ZenMyGreen;
     if (ZenDebug>=2) {
         NSLog(@"MazeScene didMoveToView");
     }
+    
+    topRightBoundaryCrossPoint = CGPointMake(self.frame.size.width - scrollableBoundary, self.frame.size.height - scrollableBoundary);
+    bottomLeftBoundaryCrossPoint =  CGPointMake(scrollableBoundary, scrollableBoundary);
+    
+    
     NSLog(@"didMoveToView: %f, %f, %f, %f",self.size.width,self.size.height,self.frame.size.width,self.frame.size.height);
     NSLog(@"square length and thickness: %f, %f", squareLength, squareWallThickness);
     
@@ -198,8 +438,16 @@ static float scrollableBoundary;
 }
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-    CGPoint avatarPositionInMap = [self.visionNode convertPoint:self.mazeAvatar.position toNode:self.mazeMap];
-    NSLog(@"avatarPositionInMap: (%f,%f)",avatarPositionInMap.x,avatarPositionInMap.y);
+    if (ZenDebug >= 2) {
+        
+        /** because the if iphone is retina model, map will have double of pixals, which make
+         *  the avatarPositionInMap twice bigger than avatarPosistion
+         */
+        CGPoint avatarPositionInMap = [self.visionNode convertPoint:self.mazeAvatar.position toNode:self.mazeMap];
+        NSLog(@"avatarPosition: (%f,%f)",self.mazeAvatar.position.x,self.mazeAvatar.position.y);
+        NSLog(@"avatarPositionInMap: (%f,%f)",avatarPositionInMap.x,avatarPositionInMap.y);
+    }
+    
     /*
     for (UITouch *touch in touches) {
         //testing, add red bound black square onto touch location
@@ -227,19 +475,20 @@ static float scrollableBoundary;
     /*
      * squareLength is no longer than screenSize/16, can be less but can't be more
      */
-    if (maze.mazeGraph.width <= 16) {
+    if (maze.mazeGraph.width <= 4) {
         worldWidth = screenSize.width;
         squareLength = screenSize.width / self.theMaze.mazeGraph.width;
         squareWallThickness = squareLength / 5.0;
     }
     else{
         // world width is > 16
-        squareLength = screenSize.width / 16;
+        squareLength = screenSize.width / maze.mazeGraph.width;//4;
         squareWallThickness = squareLength / 5.0;
         worldWidth = squareLength * self.theMaze.mazeGraph.width;
         NSLog(@"initwithmaze: %f %f",squareLength,worldWidth);
     }
-    scrollableBoundary = squareLength * 3;//cause avatar's position is in center
+    scrollableBoundary = squareLength * 4.5;//cause avatar's position is in center
+    
     return self;
 }
 
@@ -332,129 +581,35 @@ static float scrollableBoundary;
     //self.map.position = viewPoint;
 }
 
--(void)update:(NSTimeInterval)currentTime{
+/**
+ *  since self.mazeMap is the lead instead of self.mazeAvatar, a need method here
+ *  is needed. Use values in self.mazeMap to determine the isScrolling, because
+ *  the self.mazeAvatar is one frame later to update
+ *
+ *  @return isScrolling
+ */
+-(BOOL)isScrollingDetermine{
+    
+    CGPoint alightPoint = CGPointMake(round(self.mazeMap.position.x + squareLength/2), round(self.mazeMap.position.y + squareLength/2));
+    //NSLog(@"alightpoint.position (%f,%f)",alightPoint.x,alightPoint.y);
 
-    /*
-     
-     */
-    if (cnt == 1) // can be cnt == 0 on XCode 6.0
-    {
-        //below codes was from didMoveToView, but need to "textureFromNode" so
-        //move them to here
-        //[self drawAllWallsAsOneNode];
-        //[self drawAllWallsWithCellWallTypes];
-        //[self drawSolutionPath];
-        
-        //get texture
-        /*
-         SKTexture *cacheTexture =[ self.view textureFromNode:container];
-         canvas.texture = cacheTexture;
-         [canvas setSize:CGSizeMake(canvas.texture.size.width, canvas.texture.size.height)];
-         canvas.anchorPoint = CGPointMake(0, 0);
-         */
-        
-        //need to crop, otherwise the layout's frame will slight distort because the out bounded stroke
-        SKTexture *cacheTexture =[self.view textureFromNode:self.mazeLayout crop:CGRectMake(0, 0, self.mazeLayout.frame.size.width-squareWallThickness, self.mazeLayout.frame.size.height-squareWallThickness)];
-        SKSpriteNode *mazeMap = [[SKSpriteNode alloc] initWithTexture:cacheTexture color:[UIColor clearColor] size:CGSizeMake(worldWidth, worldWidth)];//self.size];
-        mazeMap.anchorPoint = CGPointMake(0, 0);
-        self.mazeMap = mazeMap;
-        [self.mazeLayout removeFromParent];
-        self.mazeLayout = nil;
-        self.mazeMap.zPosition = 0;
-        //[self addChild:self.mazeMap]; //comment out for testing SKCropNode
-        
-        SKSpriteNode *cropTileContainer = [[SKSpriteNode alloc] initWithColor:[UIColor clearColor] size:CGSizeMake(worldWidth, worldWidth)];//self.size];
-        NSLog(@"testing size0: %f", squareLength);
-        NSLog(@"testing size: %f ", self.size.width);
-        cropTileContainer.anchorPoint = CGPointMake(0, 0);
-        self.cropTileContainer = cropTileContainer;
-        NSLog(@"testing size2: %f %f", self.cropTileContainer.size.width, self.size.width);
-
-        
-        /*//testing, add mask tile/grid to cropTileContrainer
-        SKSpriteNode *tile5_5 = [[SKSpriteNode alloc] initWithColor:[UIColor blackColor] size:CGSizeMake(squareLength, squareLength*5)];
-        tile5_5.anchorPoint = CGPointMake(0, 0); //was anchor at center, now is (0,0) for better replacement according to maze's coordination and grids
-        tile5_5.position = CGPointMake(squareLength*4, squareLength*4);
-        [self.cropTileContainer addChild:tile5_5];
-        */
-         
-        self.backgroundColor = [SKColor blackColor];
-        
-        if (self.mazeAvatar == nil) {
-            NSLog(@"MazeScene: avatar is nil");
-            self.mazeAvatar = [[MazeAvatar alloc] initWithColor:[UIColor blackColor] size:CGSizeMake(squareLength*0.7, squareLength*0.7) avatarType:mazeAvatarBlackBox];
-            self.mazeAvatar.animationDelegate = self;
-        }
-        // mark the original maze cell that avatar is at
-        self.mazeAvatar.avatarMazeCell = [self.theMaze.mazeGraph getCellAtX:0 y:0];
-        //place avatar at (0,0)
-        [self.mazeAvatar calculateAvatarNodePositionWithAvatarCell:squareLength];
-        self.mazeAvatar.zPosition = 5;
-        //self.mazeAvatar.anchorPoint = CGPointMake(0, 0);
-        [self addChild:self.mazeAvatar];
-        //[self.mazeMap addChild:self.mazeAvatar];
-        //[self.mazeAvatar addChild:self.mazeMap];
-        //test for SKCropNode
-        
-        SKCropNode *visionNode = [SKCropNode node];
-        [visionNode addChild:self.mazeMap];
-        [visionNode setMaskNode:self.cropTileContainer];
-        self.visionNode = visionNode;
-        self.visionNode.zPosition = 1;
-        [self addChild:visionNode];
-        
-        self.mazeSceneAvatarIsMoving = NO;
-        self.mazeSceneAvatarCanContintuelyMoveInDirection = @"N";
-        
-        //setup avatar type and its basic
-        //just default for testing
-        //self.mazeAvatar = [[MazeAvatar alloc] initWithAvatarType:mazeAvatarBlackBox];
-        // testing giraffe
-        //self.mazeAvatar = [[MazeAvatar alloc] initWithAvatarType:mazeAvatarGiraffe];
-        // testing snail
-        //self.mazeAvatar = [[MazeAvatar alloc] initWithAvatarType:mazeAvatarSnail];
-        
-        
-        /*
-         *  must place this block inside didMoveToView, because it can't set mist
-         *  or other properties before they are initialized. Init the mazeAvatar's
-         *  property according to their types, and push the initial cell to array
-         *  accordingly
-         */
-        if (self.mazeAvatar.avatarType == mazeAvatarBlackBox) {
-            [self.mazeAvatar mazeAvatarBlackBoxStepAt:self.mazeAvatar.avatarMazeCell];
-            // draw mist after initial placement of avatar
-            [self drawMistAsOneNodeWithItsSightWithAvatarMazeCell:self.mazeAvatar.avatarMazeCell];
-        }
-        else if(self.mazeAvatar.avatarType == mazeAvatarGiraffe){
-            // draw mist after initial placement of avatar
-            //visionRangeMask is 3x3 visible area like Giraffe. Use for testing purpose on Sunday, or
-            // for giraffe's vision
-            SKSpriteNode *visionRangeMask = [SKSpriteNode spriteNodeWithColor:[SKColor blackColor] size:CGSizeMake(squareLength*3, squareLength*3)];
-            //[self.cropTileContainer addChild:visionRangeMask];
-            [visionRangeMask addChild:self.cropTileContainer];
-            [visionNode setMaskNode:visionRangeMask];
-            [self drawMistAsOneNodeWithItsSightWithAvatarMazeCell:self.mazeAvatar.avatarMazeCell];
-        }
-        else if (self.mazeAvatar.avatarType == mazeAvatarSnail){
-            [self.mazeAvatar mazeAvatarSnailAddAMazeCell:self.mazeAvatar.avatarMazeCell];
-            [self drawMistAsOneNodeWithItsSightWithAvatarMazeCell:self.mazeAvatar.avatarMazeCell];
-        }
-        else if (self.mazeAvatar.avatarType == mazeAvatarSunday){
-            self.mazeAvatar.color = [UIColor redColor];
-            self.cropTileContainer.color = [UIColor blackColor];
-        }
-        
+    // scroll right
+    if (alightPoint.x + self.size.width - squareLength < 0) {
+        return true;
     }
-    //[self cameraMovementDetermine];
-    
-    float deltaX = self.mazeAvatar.position.x - self.visionNode.position.x;
-    float deltaY = self.mazeAvatar.position.y - self.visionNode.position.y;
-    self.visionNode.position = self.mazeAvatar.position;
-    self.mazeMap.position = CGPointMake(self.mazeMap.position.x - deltaX, self.mazeMap.position.y - deltaY);
-    self.cropTileContainer.position = self.mazeMap.position;
-    
-    ++cnt;
+    // scroll left
+    else if(alightPoint.x > 0+ squareLength){
+        return true;
+    }
+    // scroll top
+    else if(alightPoint.y + self.size.height - squareLength < 0){
+        return true;
+    }
+    // scroll bottom
+    else if(alightPoint.y > 0+ squareLength){
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -464,60 +619,52 @@ static float scrollableBoundary;
  *  scrollableBoundary is in initWithMaze, = squareLength * 4
  */
 -(void)cameraMovementDetermine{
-    CGPoint avatarPositionInMap = [self.visionNode convertPoint:self.mazeAvatar.position toNode:self.mazeMap];
-    
-    BOOL isMapMove = false;
+    //CGPoint avatarPositionInMap = [self.mazeMap convertPoint:self.mazeAvatar.position toNode:self];
+    CGPoint avatarPositionInMap = self.mazeAvatar.position;
+    //NSLog(@"scrollableBoundary: %f",scrollableBoundary);
+    //NSLog(@"screen width: %f, %f",self.size.width, self.mazeMap.size.width);
+    //NSLog(@"%f %f",self.mazeAvatar.position.x,avatarPositionInMap.x);
+    isScrolling = false;
     //right edge scrollable detection
-    if ((self.size.width - self.mazeAvatar.position.x) <= scrollableBoundary) {
-        if ((self.mazeMap.size.width - avatarPositionInMap.x) > scrollableBoundary) {
-            // there is map area outside the boundary, map can scroll
-            isMapMove = true;
-            NSLog(@"map move right");
-        }
-        else{
-            // there is no extra map area outside the scene, avata can move
-        }
+    static dispatch_once_t onceToken = 0;
+    if ((self.size.width - self.mazeAvatar.position.x) < scrollableBoundary && (self.mazeMap.size.width - avatarPositionInMap.x) > scrollableBoundary) {
+        isScrolling = true;
+        dispatch_once(&onceToken, ^{
+            NSLog(@"dispatch once");
+            NSLog(@"%f, %f, %f, %f",self.size.width, self.mazeAvatar.position.x, self.mazeMap.size.width, avatarPositionInMap.x);
+        });
+        
+        NSLog(@"map move right %f",(self.mazeMap.size.width - avatarPositionInMap.x));
     }
     //left edge
-    else if (self.mazeAvatar.position.x <= scrollableBoundary) {
-        if ( avatarPositionInMap.x > scrollableBoundary) {
-            // there is map area outside the boundary, map can scroll
-            isMapMove = true;
-            NSLog(@"map move left");
-        }
-        else{
-            // there is no extra map area outside the scene, avata can move
-        }
+    else if (self.mazeAvatar.position.x < scrollableBoundary && avatarPositionInMap.x > scrollableBoundary) {
+        isScrolling = true;
+        
+        
+        NSLog(@"map move left %f",avatarPositionInMap.x);
+        
     }
     //top edge
-    else if((self.size.height - self.mazeAvatar.position.y) <= scrollableBoundary){
-        if ((self.mazeMap.size.height - avatarPositionInMap.y) > scrollableBoundary) {
-            // there is map area outside the boundary, map can scroll
-            isMapMove = true;
-            NSLog(@"map move top");
-        }
-        else{
-            // there is no extra map area outside the scene, avata can move
-        }
+    else if((self.size.height - self.mazeAvatar.position.y) < scrollableBoundary && (self.mazeMap.size.height - avatarPositionInMap.y) > scrollableBoundary){
+        isScrolling = true;
+        NSLog(@"map move top %f",(self.mazeMap.size.height - avatarPositionInMap.y));
+        
     }
     //bottom edge
-    else if (self.mazeAvatar.position.y <= scrollableBoundary) {
-        if ( avatarPositionInMap.y > scrollableBoundary) {
-            // there is map area outside the boundary, map can scroll
-            isMapMove = true;
-            NSLog(@"map move bottom");
-        }
-        else{
-            // there is no extra map area outside the scene, avata can move
-        }
+    else if (self.mazeAvatar.position.y < scrollableBoundary && avatarPositionInMap.y > scrollableBoundary) {
+        isScrolling = true;
+        NSLog(@"map move bottom: %f",avatarPositionInMap.y);
+        
     }
     
-    if (isMapMove) {
-        [self camearMovementMapMove];
+    /*
+    if (isScrolling) {
+        //[self camearMovementMapMove];
     }
     else{
-        [self cameraMovementAvatarMove];
+        //[self cameraMovementAvatarMove];
     }
+     */
 }
 
 -(void)cameraMovementAvatarMove{
@@ -704,7 +851,9 @@ static float scrollableBoundary;
     }
     
     if (fromCell != self.mazeAvatar.avatarMazeCell) {
+        //test, upper one is good, lower one is working on camera
         [self.mazeAvatar animateAvatarNodePositionWithAvatarCell:squareLength times:times];
+        //[self.mazeAvatar animateAvatarNodePositionWithAvatarCell:squareLength times:times mazeMap:self.mazeMap cropTileContainer:self.cropTileContainer];
     }
 }
 
