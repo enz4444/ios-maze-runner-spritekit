@@ -182,6 +182,7 @@
     [self runAction:actionSet];
 }
 
+// maze map moves but the avatar stay
 -(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength times:(int)times mazeMap:(SKSpriteNode *)mazeMap cropTileContainer:(SKSpriteNode *)cropTileContainer{
     //use SKAction to animte the movement action
     //delta x or y is self.avatarMazeCell's position(new) minus self.postion(old)
@@ -217,7 +218,8 @@
     SKAction *moveGroup = [SKAction sequence:@[moveRepeat,callDelegate]];
     SKAction *actionSet = [SKAction sequence:@[beforeAnimation,moveGroup,afterAnimation]];
     
-    [mazeMap runAction:actionSet];
+    [mazeMap runAction:actionSet]; //avatar move?
+    //[self runAction:actionSet]; //map move?
 }
 
 

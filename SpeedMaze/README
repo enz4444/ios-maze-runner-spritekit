@@ -18,3 +18,13 @@ avatarP.x / self.size.width = avatarM.x / self.mazeMap.width
 always:
 avatarP.x / self.size.width >= avatarM.x / self.mazeMap.width
 self.mazeMap.with as分母it‘s always bigger
+
+Found Bug:
+1. Change value of width, then click left bottom corner's "back to menu" button, then choose an avatar type. App will crash
+
+To do:
+1. Always enable zoom in, tap on screen to zoom out. Which camera is necessary.
+
+Camera Movement:
+1. always follow avatar, even display the area outside the map bound; Then add tap to show whole map(1x 2x whole)
+2. like above but add contrains to not display the area outside the map bound

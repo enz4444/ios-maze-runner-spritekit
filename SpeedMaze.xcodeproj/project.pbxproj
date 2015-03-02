@@ -67,6 +67,7 @@
 		B3C824CD1A50D80B009F88F5 /* MazeUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MazeUtilities.h; sourceTree = "<group>"; };
 		B3C824CE1A50D84F009F88F5 /* MazeUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MazeUtilities.m; sourceTree = "<group>"; };
 		B3C824D01A5398E3009F88F5 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		B3E4D3211AA3CA4600E4E60C /* LoggerMacro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoggerMacro.h; sourceTree = "<group>"; };
 		B3EEB47A1A1EA87B006DE679 /* SpeedMaze.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpeedMaze.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3EEB47E1A1EA87B006DE679 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B3EEB47F1A1EA87B006DE679 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -185,6 +186,7 @@
 			isa = PBXGroup;
 			children = (
 				B3EEB47E1A1EA87B006DE679 /* Info.plist */,
+				B3E4D3211AA3CA4600E4E60C /* LoggerMacro.h */,
 				B3EEB4AE1A1EA96D006DE679 /* SpeedMaze-Prefix.pch */,
 				B3EEB47F1A1EA87B006DE679 /* main.m */,
 			);

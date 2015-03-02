@@ -264,7 +264,7 @@ static CGPoint bottomLeftBoundaryCrossPoint;
     [super didFinishUpdate];
     float deltaX = self.mazeAvatar.position.x - self.visionNode.position.x;
     float deltaY = self.mazeAvatar.position.y - self.visionNode.position.y;
-    self.visionNode.position = self.mazeAvatar.position;
+    self.visionNode.position = self.mazeAvatar.position; //map move?
     self.mazeMap.position = CGPointMake(self.mazeMap.position.x - deltaX, self.mazeMap.position.y - deltaY);
     self.cropTileContainer.position = self.mazeMap.position;
     //NSLog(@"two deltaX: %f, %f",deltaX,deltaY);
@@ -363,6 +363,7 @@ static CGPoint bottomLeftBoundaryCrossPoint;
     cnt =0;
     
     //[self.view addGestureRecognizer:];
+    //[self drawSolutionPath];
     
 }
 
@@ -475,14 +476,15 @@ static CGPoint bottomLeftBoundaryCrossPoint;
     /*
      * squareLength is no longer than screenSize/16, can be less but can't be more
      */
-    if (maze.mazeGraph.width <= 4) {
+    if (maze.mazeGraph.width <= 15) {
         worldWidth = screenSize.width;
         squareLength = screenSize.width / self.theMaze.mazeGraph.width;
         squareWallThickness = squareLength / 5.0;
     }
     else{
         // world width is > 16
-        squareLength = screenSize.width / maze.mazeGraph.width;//4;
+        squareLength = screenSize.width / 16; // when greater than 16, each grid is fix length, map size will be larger than screen size
+        //squareLength = screenSize.width / maze.mazeGraph.width;// even greater than 16, grid size is dynamic, map size will not larger than screen size
         squareWallThickness = squareLength / 5.0;
         worldWidth = squareLength * self.theMaze.mazeGraph.width;
         NSLog(@"initwithmaze: %f %f",squareLength,worldWidth);
@@ -559,6 +561,7 @@ static CGPoint bottomLeftBoundaryCrossPoint;
     solutionPath.path = [wallPath CGPath];
     solutionPath.lineWidth = squareLength * 8 / 10;
     solutionPath.strokeColor = [SKColor redColor];
+    solutionPath.zPosition = 10; // need it be on top, or it can't display because the refresh/update routine
     [self addChild:solutionPath];
 }
 
@@ -852,8 +855,8 @@ static CGPoint bottomLeftBoundaryCrossPoint;
     
     if (fromCell != self.mazeAvatar.avatarMazeCell) {
         //test, upper one is good, lower one is working on camera
-        [self.mazeAvatar animateAvatarNodePositionWithAvatarCell:squareLength times:times];
-        //[self.mazeAvatar animateAvatarNodePositionWithAvatarCell:squareLength times:times mazeMap:self.mazeMap cropTileContainer:self.cropTileContainer];
+        //[self.mazeAvatar animateAvatarNodePositionWithAvatarCell:squareLength times:times];
+        [self.mazeAvatar animateAvatarNodePositionWithAvatarCell:squareLength times:times mazeMap:self.mazeMap cropTileContainer:self.cropTileContainer];
     }
 }
 
