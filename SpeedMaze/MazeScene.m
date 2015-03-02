@@ -157,7 +157,8 @@ static CGPoint bottomLeftBoundaryCrossPoint;
         //need to crop, otherwise the layout's frame will slight distort because the out bounded stroke
         SKTexture *cacheTexture =[self.view textureFromNode:self.mazeLayout crop:CGRectMake(0, 0, self.mazeLayout.frame.size.width-squareWallThickness, self.mazeLayout.frame.size.height-squareWallThickness)];
         //test: worldWidth to enlarge, self.size to fit
-        SKSpriteNode *mazeMap = [[SKSpriteNode alloc] initWithTexture:cacheTexture color:[UIColor clearColor] size:self.size];//CGSizeMake(worldWidth, worldWidth)];//self.size];
+        SKSpriteNode *mazeMap = [[SKSpriteNode alloc] initWithTexture:cacheTexture color:[UIColor clearColor] size:CGSizeMake(worldWidth, worldWidth)];// map larger than screen
+        //SKSpriteNode *mazeMap = [[SKSpriteNode alloc] initWithTexture:cacheTexture color:[UIColor clearColor] size:self.size];// map size equal to screen size
         mazeMap.anchorPoint = CGPointMake(0, 0);
         self.mazeMap = mazeMap;
         [self.mazeLayout removeFromParent];
@@ -166,7 +167,8 @@ static CGPoint bottomLeftBoundaryCrossPoint;
         //[self addChild:self.mazeMap]; //comment out for testing SKCropNode
         
         //test: worldWidth to enlarge, self.size to fit
-        SKSpriteNode *cropTileContainer = [[SKSpriteNode alloc] initWithColor:[UIColor clearColor] size:self.size];//CGSizeMake(worldWidth, worldWidth)];//self.size];
+        SKSpriteNode *cropTileContainer = [[SKSpriteNode alloc] initWithColor:[UIColor clearColor] size:CGSizeMake(worldWidth, worldWidth)];// map larger than screen
+        //SKSpriteNode *cropTileContainer = [[SKSpriteNode alloc] initWithColor:[UIColor clearColor] size:self.size];// map size equal to screen size
         //NSLog(@"testing size0: %f", squareLength);
         //NSLog(@"testing size: %f ", self.size.width);
         cropTileContainer.anchorPoint = CGPointMake(0, 0);
