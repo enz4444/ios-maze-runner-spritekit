@@ -138,7 +138,14 @@
  */
 -(void)calculateAvatarNodePositionWithAvatarCell:(float)squareLength{
     self.position = CGPointMake(squareLength/2 + self.avatarMazeCell.x * squareLength, squareLength/2 + self.avatarMazeCell.y * squareLength);
-    
+    /*
+    if (self.avatarType == mazeAvatarBlackBox) {
+        self.position = CGPointMake(squareLength/2 + self.avatarMazeCell.x * squareLength, squareLength/2 + self.avatarMazeCell.y * squareLength);// avatar's position is at lower left corner
+    }
+    else{
+        self.position = CGPointMake(ZenSW / 2 + self.avatarMazeCell.x * squareLength, ZenSW / 2 + squareLength/2 + self.avatarMazeCell.y * squareLength); // try to place it at center, not work in BlackBox
+    }
+     */
 }
 
 /**

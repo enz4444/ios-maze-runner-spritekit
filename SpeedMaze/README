@@ -23,7 +23,9 @@ Found Bug:
 1. Change value of width, then click left bottom corner's "back to menu" button, then choose an avatar type. App will crash
 
 To do:
-1. Always enable zoom in, tap on screen to zoom out. Which camera is necessary.
+1. set anchor of avatar to center in Camera Movement style 1
+2. Always enable zoom in, tap on screen to zoom out. Which camera is necessary.
+3. BlackBox's map move is not yet working, need to change map position instead avatar position
 
 Camera Movement:
 1. always follow avatar, even display the area outside the map bound; Then add tap to show whole map(1x 2x whole)

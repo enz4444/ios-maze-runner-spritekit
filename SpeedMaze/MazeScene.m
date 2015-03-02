@@ -134,6 +134,7 @@ static CGPoint bottomLeftBoundaryCrossPoint;
  */
 -(void)update:(NSTimeInterval)currentTime{
     [super update:currentTime];
+    
     /*
      
      */
@@ -251,12 +252,15 @@ static CGPoint bottomLeftBoundaryCrossPoint;
         }
         
         //initial correction, since self.visionNode(SKCropNode has no anchorPoint
+        ENDebug(@"self.mazeAvatar.position: %f,%f",self.mazeAvatar.position.x,self.mazeAvatar.position.y); // setup initial self.mazeAvatar's position can also set all other elements' position because they are all related from mazeAvatar?
         float deltaX = self.mazeAvatar.position.x - self.visionNode.position.x;
         float deltaY = self.mazeAvatar.position.y - self.visionNode.position.y;
         self.visionNode.position = self.mazeAvatar.position;
         self.mazeMap.position = CGPointMake(self.mazeMap.position.x - deltaX, self.mazeMap.position.y - deltaY);
         self.cropTileContainer.position = self.mazeMap.position;
-        NSLog(@"two deltaX: %f, %f",deltaX,deltaY);
+        ENDebug(@"two deltaX: %f, %f",deltaX,deltaY);
+        ENDebug(@"map.position: %f, %f",self.mazeMap.position.x,self.mazeMap.position.y);
+        
     }
     
     ++cnt;
@@ -264,12 +268,15 @@ static CGPoint bottomLeftBoundaryCrossPoint;
 
 -(void)didFinishUpdate{
     [super didFinishUpdate];
+    
     float deltaX = self.mazeAvatar.position.x - self.visionNode.position.x;
     float deltaY = self.mazeAvatar.position.y - self.visionNode.position.y;
     self.visionNode.position = self.mazeAvatar.position; //map move?
     self.mazeMap.position = CGPointMake(self.mazeMap.position.x - deltaX, self.mazeMap.position.y - deltaY);
     self.cropTileContainer.position = self.mazeMap.position;
     //NSLog(@"two deltaX: %f, %f",deltaX,deltaY);
+    //ENDebug(@"mazemap.position: %f, %f",self.mazeMap.position.x,self.mazeMap.position.y);
+
     
 }
 
@@ -350,6 +357,7 @@ static CGPoint bottomLeftBoundaryCrossPoint;
 -(void)didMoveToView:(SKView *)view{
     [super didMoveToView:view];
     self.backgroundColor = [SKColor blueColor];//ZenMyGreen;
+    self.anchorPoint = CGPointMake(0.5, 0.5);
     if (ZenDebug>=2) {
         NSLog(@"MazeScene didMoveToView");
     }
@@ -692,9 +700,9 @@ static CGPoint bottomLeftBoundaryCrossPoint;
  *  @param keyName from the other SKView that has gamepad
  */
 -(void)gamepadControlMoveTo:(NSString *)keyName{
-    if (ZenDebug>=3) {
-        NSLog(@"avatarCell x:%i,y:%i",self.mazeAvatar.avatarMazeCell.x,self.mazeAvatar.avatarMazeCell.y);
-    }
+    //self.position = CGPointMake(self.position.x +10,self.position.y +10);
+    ENDebug(@"self.position:%f,%f\nself.view.frame:%f,%f,%f,%f",self.position.x, self.position.y, self.view.frame.origin.x,self.view.frame.origin.y,self.view.frame.size.width,self.view.frame.size.height);
+    ENDebug(@"avatarCell x:%i,y:%i",self.mazeAvatar.avatarMazeCell.x,self.mazeAvatar.avatarMazeCell.y);
     
     // detect skill, and filter out those have only passive skill
     if ([keyName isEqualToString:@"S"] && self.mazeAvatar.avatarType != mazeAvatarGiraffe) {
