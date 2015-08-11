@@ -8,6 +8,9 @@
 
 #import "GameViewController.h"
 
+@interface GameViewController ()
+
+@end
 
 @implementation SKScene (Unarchive)
 
@@ -36,108 +39,42 @@
     if (ZenDebug>=2) {
         NSLog(@"Enter GameVC viewDidLoad");
     }
-
-    /*
-    for (int i = 0; i < 100; i++) {
-        NSLog(@"int: %u",arc4random_uniform(10));
-    }
-     */
-    /*
-    NSNumber *one = [NSNumber numberWithInt:1];
-    NSNumber *pointToOne = one;
-    NSLog(@"first: %@, %@", [one stringValue],[pointToOne stringValue]);//1,1
-    one = [NSNumber numberWithInt:2];
-    NSLog(@"second: %@, %@", [one stringValue],[pointToOne stringValue]);//2,1
-    */
-    /*
-    NSMutableArray *strings = [NSMutableArray arrayWithObjects:@"1",@"2", nil];
-    NSMutableArray *pointer = strings;
-    [strings addObject:@"3"];
-    NSLog(@"%@",pointer);//1,2,3
-     
-     */
-    MazeGenerator *testMaze;
-    @try {
-        int mazeWidth = 10;
-        int mazeHeight = 10;
-        testMaze = [[MazeGenerator alloc] initMazeWithWidth:mazeWidth height:mazeHeight];
-        [testMaze defaultMaze];
-        //print solution path
-        if (ZenDebug>=3) {
-            for (MazeCell *step in testMaze.path) {
-                NSLog(@"(%i,%i)",step.x,step.y);
-                
-            }
-        }
-        
-        //ASCII maze no right,bottom walls // ⅃
-        if (ZenDebug>=3) {
-            for (int j = 0; j < mazeHeight-1; j++) {
-                NSString *row = @"";
-                for (int i = 0; i < mazeWidth-1; i++) {
-                    if(![testMaze.mazeGraph areConnectedBetween:((MazeCell *)testMaze.mazeGraph.cells[i][j]) and:((MazeCell *)testMaze.mazeGraph.cells[i+1][j])]){
-                        if(![testMaze.mazeGraph areConnectedBetween:((MazeCell *)testMaze.mazeGraph.cells[i][j]) and:((MazeCell *)testMaze.mazeGraph.cells[i][j+1])]){
-                            row=[row stringByAppendingString:@" "];
-                        }
-                        else{
-                            row=[row stringByAppendingString:@"_"];
-                        }
-                    }
-                    else{
-                        if(![testMaze.mazeGraph areConnectedBetween:((MazeCell *)testMaze.mazeGraph.cells[i][j]) and:((MazeCell *)testMaze.mazeGraph.cells[i][j+1])]){
-                            row=[row stringByAppendingString:@"|"];
-                        }
-                        else{
-                            row=[row stringByAppendingString:@">"];
-                        }
-                    }
-                }
-                NSLog(@"%@",row);
-            }
-        }
-        
-
-    }
-    @catch (NSException *exception) {
-        NSLog(@"Error: failure to generate default maze. \nDescription: %@", exception.description);
-
-    }
-    @finally {
-        
-    }
     
-    if (testMaze) {
-        SKView * mazeSKView = [[SKView alloc] initWithFrame:CGRectMake(0, 0, ZenSW, ZenSW)];
+    if (true) {
+        //main view
         SKView * skView = (SKView *)self.view;
-        // Configure the view.
+        skView.ignoresSiblingOrder = YES;
 
-        MazeScene *mazeScene = [[MazeScene alloc] initWithMaze:testMaze andScreenSize:CGSizeMake(skView.frame.size.width, skView.frame.size.width)];
-        mazeScene.scaleMode = SKSceneScaleModeAspectFit;
-        mazeScene.backgroundColor = [UIColor whiteColor];
-        //mazeScene.position = CGPointMake(ZenSW / 2, ZenSW / 2);
-        //mazeScene.frame = CGRectMake(0, 0, skView.frame.size.width, skView.frame.size.width);
-        NSLog(@"casted skView: %f, %f, %f, %f",skView.frame.origin.x,skView.frame.origin.y,skView.frame.size.width,skView.frame.size.height);
+        //maze view
+        SKView * mazeSKView = [[SKView alloc] initWithFrame:CGRectMake(0, 0, ZenSW, ZenSW)];
         mazeSKView.showsFPS = YES;
         mazeSKView.showsDrawCount = YES;
         mazeSKView.showsQuadCount = YES;
         mazeSKView.showsPhysics = YES;
         mazeSKView.showsFields = YES;
         mazeSKView.showsNodeCount = YES;
-        /* Sprite Kit applies additional optimizations to improve rendering performance */
-        skView.ignoresSiblingOrder = YES;
         mazeSKView.ignoresSiblingOrder = YES;
-        // otherwise the game view is in center, can't set its position nor frame
-        [skView addSubview:mazeSKView];
-        // Present the scene.
-        self.mazeScene = mazeScene;
-        [mazeSKView presentScene:mazeScene];
+        self.mazeSKView = mazeSKView;
         
-        SKView * contralpadSKView = [[SKView alloc] initWithFrame:CGRectMake(0, ZenSW, ZenSW, ZenSW/3)];
+        //gamepad view
+        SKView * controlpadSKView = [[SKView alloc] initWithFrame:CGRectMake(0, ZenSW, ZenSW, ZenSW/3)];
+        
+        //gamepad scene
         GamepadScene *gamepadScene = [[GamepadScene alloc] initWithSize:CGSizeMake(ZenSW, ZenSW/3)];
         gamepadScene.gamepadDelegate = self;
-        [skView addSubview:contralpadSKView];
-        [contralpadSKView presentScene:gamepadScene];
         
+        MenuScene *menuScene = [[MenuScene alloc] initMazeGameMenuWithSize:mazeSKView.bounds.size];
+        menuScene.gameMenudelegate = self;
+        self.menuScene = menuScene;
+        //add all subview to main view
+        [skView addSubview:mazeSKView];
+        [skView addSubview:controlpadSKView];
+
+        //present all scene to their subview
+        [mazeSKView presentScene:menuScene];
+        [controlpadSKView presentScene:gamepadScene];
+        
+        NSLog(@"casted skView: %f, %f, %f, %f",skView.frame.origin.x,skView.frame.origin.y,skView.frame.size.width,skView.frame.size.height);
     }
     else{
         // Configure the view.
@@ -153,18 +90,21 @@
         // Create and configure the scene.
         GameScene *scene = [GameScene unarchiveFromFile:@"GameScene"];
         scene.scaleMode = SKSceneScaleModeAspectFill;
-        
         // Present the scene.
         [skView presentScene:scene];
     }
     
-    
-    
+}
+
+-(void)viewDidAppear:(BOOL)animated{
+    if (ZenDebug>=2) {
+        NSLog(@"Enter GameVC viewDidAppear");
+    }
 }
 
 - (BOOL)shouldAutorotate
 {
-    return YES;
+    return NO;
 }
 
 - (NSUInteger)supportedInterfaceOrientations
@@ -186,8 +126,108 @@
     return YES;
 }
 
+-(void)returnToMainMenu{
+    //back to main menu
+    self.mazeMaze = nil;
+    self.mazeScene = nil;
+    SKTransition *reveal = [SKTransition fadeWithDuration:1];
+    [self.mazeSKView presentScene:self.menuScene transition:reveal];
+}
+
+/**
+ *  GamepadSceneDelegate
+ *
+ *  @param keyName direction key
+ */
 -(void)gamepadKeyTouched:(NSString *)keyName{
-    [self.mazeScene gamepadControlMoveTo:keyName];
+    if ([keyName isEqualToString:@"Q"]) {
+        [self returnToMainMenu];
+    }
+    else{
+        if (self.mazeScene != nil) {
+            [self.mazeScene gamepadControlMoveTo:keyName];
+        }
+    }
+}
+
+/**
+ *  MazeGameMenuDelegate
+ */
+-(void)generateMazeWithWidth:(int)width andHeight:(int)height andAvatarType:(mazeAvatarType)avataType{
+    @try {
+        self.mazeMaze = [[MazeGenerator alloc] initMazeWithWidth:width height:height];
+        [self.mazeMaze defaultMaze];
+        
+        /*
+         scene type: N x N
+         N<50
+         one screen fits all -> SKSceneScaleModeAspectFit
+         otherwise square lenth no les than width/15
+         
+         */
+        
+        //fade in mazeScene
+        self.mazeScene = [[MazeScene alloc] initWithMaze:self.mazeMaze andScreenSize:CGSizeMake(self.view.frame.size.width, self.view.frame.size.width) andAvatarType:avataType];
+        
+        self.mazeScene.scaleMode = SKSceneScaleModeAspectFit;
+
+        self.mazeScene.gameConditionDelegate = self;
+        self.mazeScene.backgroundColor = [UIColor whiteColor];
+        SKTransition *reveal = [SKTransition fadeWithDuration:0.1];
+        [self.mazeSKView presentScene:self.mazeScene transition:reveal];
+        
+        
+        //print solution path
+        if (ZenDebug>=3) {
+            for (MazeCell *step in self.mazeMaze.path) {
+                NSLog(@"(%i,%i)",step.x,step.y);
+            }
+        }
+        
+        //ASCII maze no right,bottom walls // ⅃
+        if (ZenDebug>=3) {
+            for (int j = 0; j < height-1; j++) {
+                NSString *row = @"";
+                for (int i = 0; i < width-1; i++) {
+                    if(![self.mazeMaze.mazeGraph areConnectedBetween:((MazeCell *)self.mazeMaze.mazeGraph.cells[i][j]) and:((MazeCell *)self.mazeMaze.mazeGraph.cells[i+1][j])]){
+                        if(![self.mazeMaze.mazeGraph areConnectedBetween:((MazeCell *)self.mazeMaze.mazeGraph.cells[i][j]) and:((MazeCell *)self.mazeMaze.mazeGraph.cells[i][j+1])]){
+                            row=[row stringByAppendingString:@" "];
+                        }
+                        else{
+                            row=[row stringByAppendingString:@"_"];
+                        }
+                    }
+                    else{
+                        if(![self.mazeMaze.mazeGraph areConnectedBetween:((MazeCell *)self.mazeMaze.mazeGraph.cells[i][j]) and:((MazeCell *)self.mazeMaze.mazeGraph.cells[i][j+1])]){
+                            row=[row stringByAppendingString:@"|"];
+                        }
+                        else{
+                            row=[row stringByAppendingString:@">"];
+                        }
+                    }
+                }
+                NSLog(@"%@",row);
+            }
+        }
+        
+        
+    }
+    @catch (NSException *exception) {
+        NSLog(@"Error: failure to generate default maze. \nDescription: %@", exception.description);
+        
+    }
+    @finally {
+        
+    }
+
+    
+}
+
+/**
+ *  MazeSceneGameConditionDelegate
+ */
+-(void)mazeSceneGameEnds:(NSString *)condition{
+    [self returnToMainMenu];
 }
 
 @end

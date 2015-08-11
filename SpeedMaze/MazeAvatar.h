@@ -21,27 +21,63 @@ typedef NS_ENUM(uint32_t, mazeAvatarType)
     // will leave track
     mazeAvatarSnail          = 0x1 << 2,
     
+    // no mist
+    mazeAvatarSunday         = 0x4 << 3,
+    
     //undefined
     mazeAvatarUndefined              = 0x0
 };
 
+@protocol MazeAvatarAnimationDelegate;
+
+@interface MazeAvatar : SKSpriteNode
+
+@property (weak,nonatomic) id<MazeAvatarAnimationDelegate> animationDelegate;
+
+@property (strong,readonly,nonatomic) NSMutableSet *snailTrailSet;
+
 /**
- *  idealy, return instance of an avatar according to type
+ *  the type of avatar in currect maze
  */
-@interface MazeAvatar : NSObject
+@property (assign,nonatomic) mazeAvatarType avatarType;
 
-// the type of avatar in currect maze
-@property (assign, nonatomic) mazeAvatarType avatarType;
+@property (assign,readonly,nonatomic) float mazeAvatarSpeed;
 
--(instancetype)init;
+@property (assign,readonly,nonatomic) BOOL isAnimating;
 
--(instancetype)initWithAvatarType:(mazeAvatarType)avatarType;
 
-//need method to effect the maze when avtar moves
+/**
+ *  the MazeCell that avatar is at
+ */
+@property (strong,nonatomic) MazeCell *avatarMazeCell;
 
-//need method to effect the maze when avtar invokes skill
 
--(void)mazeAvatarMove:(MazeGraph *)mazeGraph inDirection:(NSString *)keyname fromLocation:(MazeCell *)avatarMazeCell toLocation:(MazeCell *)toCell;
+-(instancetype)initWithColor:(UIColor *)color size:(CGSize)size;
+
+-(instancetype)initWithColor:(UIColor *)color size:(CGSize)size avatarType:(mazeAvatarType)avatarType;
+
+/**
+ *  animate the movement for avatar escept for blackbox
+ *  Blackbox will use calculateAvatarNodePositionWithAvatarCell instead
+ *
+ *  @param squareLength the width of a tile
+ */
+-(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength times:(int)times;
+
+/**
+ *  It's like
+ *  -(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength times:(int)times;
+ *  but add a subject, can be either map or avartar,
+ */
+-(void)animateAvatarNodePositionWithAvatarCell:(float)squareLength times:(int)times mazeMap:(SKSpriteNode *)mazeMap cropTileContainer:(SKSpriteNode *)cropTileContainer;
+
+/**
+ *  convert avatarMazeCell's coordination to SKSpriteNode's position
+ *  this method does no animation, just change node's position
+ *
+ *  @param squareLength the width of a tile
+ */
+-(void)calculateAvatarNodePositionWithAvatarCell:(float)squareLength;
 
 /**
  *  CAUTION! balck box is move like teleporting, a new cell means the
@@ -65,5 +101,27 @@ typedef NS_ENUM(uint32_t, mazeAvatarType)
 -(MazeCell *)mazeAvatarBlackBoxUndoACell;
 -(NSString *)mazeAvatarBlackBoxUndoADirection;//use direction instead, already mirrored when return
 
+/**
+ *  add to this array for EVERY single tile of maze cell that snail walked in.
+ *  Better invoke this for every tile snails pass
+ *
+ *  @param aCell maze cell
+ */
+-(void)mazeAvatarSnailAddAMazeCell:(MazeCell *)aCell;
+
+/**
+ *  Mark all trail maze cells to visible/no mist.
+ *  Better invoke this before draw mist.
+ */
+-(void)mazeAvatarSnailMarkAllTrailMazeCellToVisiable;
+
+
+@end
+
+@protocol MazeAvatarAnimationDelegate <NSObject>
+
+-(void)mazeAvatarAnimationDidFinishOneTileMovment;
+
+-(void)mazeAvatarAnimationDidFinishRepeatMovement;
 
 @end

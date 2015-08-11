@@ -14,11 +14,14 @@
 		B3138E2B1A1F289700AE1142 /* abcmazeGenerator.txt in Resources */ = {isa = PBXBuildFile; fileRef = B3138E261A1F289700AE1142 /* abcmazeGenerator.txt */; };
 		B3138E2F1A1F298A00AE1142 /* MazeGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = B3138E2E1A1F298A00AE1142 /* MazeGraph.m */; };
 		B326DC821A44CBFC00F5E4A2 /* MazeAvatar.m in Sources */ = {isa = PBXBuildFile; fileRef = B326DC811A44CBFC00F5E4A2 /* MazeAvatar.m */; };
+		B326DC851A451AF100F5E4A2 /* MenuScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B326DC841A451AF100F5E4A2 /* MenuScene.m */; };
 		B3623B291A352BF20049522F /* MazeScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B3623B281A352BF20049522F /* MazeScene.m */; };
 		B38563D41A219C7D00525728 /* SpriteKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38563D31A219C7D00525728 /* SpriteKit.framework */; };
 		B38563D61A219C8800525728 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38563D51A219C8800525728 /* UIKit.framework */; };
 		B38563D81A219C8E00525728 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38563D71A219C8E00525728 /* Foundation.framework */; };
 		B38563DA1A219C9400525728 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38563D91A219C9400525728 /* CoreFoundation.framework */; };
+		B3C824CF1A50D84F009F88F5 /* MazeUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C824CE1A50D84F009F88F5 /* MazeUtilities.m */; };
+		B3C824D11A5398E3009F88F5 /* README in Resources */ = {isa = PBXBuildFile; fileRef = B3C824D01A5398E3009F88F5 /* README */; };
 		B3EEB4801A1EA87B006DE679 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B3EEB47F1A1EA87B006DE679 /* main.m */; };
 		B3EEB4831A1EA87B006DE679 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B3EEB4821A1EA87B006DE679 /* AppDelegate.m */; };
 		B3EEB4861A1EA87B006DE679 /* GameScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B3EEB4851A1EA87B006DE679 /* GameScene.m */; };
@@ -53,12 +56,18 @@
 		B3138E2E1A1F298A00AE1142 /* MazeGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MazeGraph.m; sourceTree = "<group>"; };
 		B326DC801A44CBDB00F5E4A2 /* MazeAvatar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MazeAvatar.h; sourceTree = "<group>"; };
 		B326DC811A44CBFC00F5E4A2 /* MazeAvatar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MazeAvatar.m; sourceTree = "<group>"; };
+		B326DC831A451AF100F5E4A2 /* MenuScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuScene.h; sourceTree = "<group>"; };
+		B326DC841A451AF100F5E4A2 /* MenuScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuScene.m; sourceTree = "<group>"; };
 		B3623B271A352B9E0049522F /* MazeScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MazeScene.h; sourceTree = "<group>"; };
 		B3623B281A352BF20049522F /* MazeScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MazeScene.m; sourceTree = "<group>"; };
 		B38563D31A219C7D00525728 /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
 		B38563D51A219C8800525728 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		B38563D71A219C8E00525728 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B38563D91A219C9400525728 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		B3C824CD1A50D80B009F88F5 /* MazeUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MazeUtilities.h; sourceTree = "<group>"; };
+		B3C824CE1A50D84F009F88F5 /* MazeUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MazeUtilities.m; sourceTree = "<group>"; };
+		B3C824D01A5398E3009F88F5 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		B3E4D3211AA3CA4600E4E60C /* LoggerMacro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoggerMacro.h; sourceTree = "<group>"; };
 		B3EEB47A1A1EA87B006DE679 /* SpeedMaze.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpeedMaze.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3EEB47E1A1EA87B006DE679 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B3EEB47F1A1EA87B006DE679 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -141,12 +150,15 @@
 			isa = PBXGroup;
 			children = (
 				B3138E211A1F289700AE1142 /* SourceCodesHelpFiles */,
+				B3C824D01A5398E3009F88F5 /* README */,
 				B3EEB4811A1EA87B006DE679 /* AppDelegate.h */,
 				B3EEB4821A1EA87B006DE679 /* AppDelegate.m */,
 				B326DC801A44CBDB00F5E4A2 /* MazeAvatar.h */,
 				B326DC811A44CBFC00F5E4A2 /* MazeAvatar.m */,
 				B3EEB4A81A1EA8C5006DE679 /* MazeCell.h */,
 				B3EEB4A91A1EA8C5006DE679 /* MazeCell.m */,
+				B3C824CD1A50D80B009F88F5 /* MazeUtilities.h */,
+				B3C824CE1A50D84F009F88F5 /* MazeUtilities.m */,
 				B3EEB4AA1A1EA8C5006DE679 /* MazeGenerator.h */,
 				B3EEB4AB1A1EA8C5006DE679 /* MazeGenerator.m */,
 				B3FB71F71A3BE8E600C270A8 /* GamepadScene.h */,
@@ -155,6 +167,8 @@
 				B3138E2E1A1F298A00AE1142 /* MazeGraph.m */,
 				B3623B271A352B9E0049522F /* MazeScene.h */,
 				B3623B281A352BF20049522F /* MazeScene.m */,
+				B326DC831A451AF100F5E4A2 /* MenuScene.h */,
+				B326DC841A451AF100F5E4A2 /* MenuScene.m */,
 				B3EEB4841A1EA87B006DE679 /* GameScene.h */,
 				B3EEB4851A1EA87B006DE679 /* GameScene.m */,
 				B3EEB4871A1EA87B006DE679 /* GameScene.sks */,
@@ -172,6 +186,7 @@
 			isa = PBXGroup;
 			children = (
 				B3EEB47E1A1EA87B006DE679 /* Info.plist */,
+				B3E4D3211AA3CA4600E4E60C /* LoggerMacro.h */,
 				B3EEB4AE1A1EA96D006DE679 /* SpeedMaze-Prefix.pch */,
 				B3EEB47F1A1EA87B006DE679 /* main.m */,
 			);
@@ -287,6 +302,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3C824D11A5398E3009F88F5 /* README in Resources */,
 				B3138E2B1A1F289700AE1142 /* abcmazeGenerator.txt in Resources */,
 				B3EEB4931A1EA87B006DE679 /* LaunchScreen.xib in Resources */,
 				B3138E281A1F289700AE1142 /* abccell.txt in Resources */,
@@ -329,8 +345,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B326DC851A451AF100F5E4A2 /* MenuScene.m in Sources */,
 				B3EEB48B1A1EA87B006DE679 /* GameViewController.m in Sources */,
 				B326DC821A44CBFC00F5E4A2 /* MazeAvatar.m in Sources */,
+				B3C824CF1A50D84F009F88F5 /* MazeUtilities.m in Sources */,
 				B3EEB4831A1EA87B006DE679 /* AppDelegate.m in Sources */,
 				B3EEB4AD1A1EA8C5006DE679 /* MazeGenerator.m in Sources */,
 				B3138E2F1A1F298A00AE1142 /* MazeGraph.m in Sources */,

@@ -8,11 +8,40 @@
 
 #import "MazeGenerator.h"
 
-@interface MazeGenerator()
+#define MaxStepsBeforeBacktrace 10
+#define MaxStepsBeforeBacktraceActive false
+
+@interface MazeGenerator(){
+    int currentSteps;
+}
 
 @property(strong,nonatomic) NSMutableArray *cellStack;
 
+/**
+ *  default grow a mze from 0,0 recusively
+ *
+ *  @param mazeCell
+ */
+-(void)defaultRecusiveGrowMaze:(MazeCell *)mazeCell;
 
+/**
+ *  default(original) method to grow a maze from a maze cell
+ *
+ *  @param mazeCell mazeCell at (0,0)
+ */
+-(void)defaultGenerateMaze;
+
+/**
+ *  render/filter the maze cell, get rid(or mark) of those are 'tube' shape
+ */
+-(void)defaultMazeCellFilter;
+
+/**
+ *  Similar to defaultRecusiveGrowMaze:, this method can generate a no circular path perfect maze. This method will replace the default generate algorithm, because the default one can't generate a maze with more "branches", it was too "smooth".
+ *
+ *  @param mazeCell
+ */
+-(void)perfectGrowMaze:(MazeCell *)mazeCell;
 @end
 
 @implementation MazeGenerator
@@ -36,34 +65,94 @@
     return self;
 }
 
-/**
- *  do all the necessary steps to build a maze;
- */
 -(void)defaultMaze{
-    [self defaultGenerateMaze];
+    [self defaultGenerateMaze]; //or choose other generate methods
     [self defaultSolveMaze];
     [self defaultMazeCellFilter];
 }
 
+-(void)perfectMaze{
+    
+}
+
+-(void)perfectGrowMaze:(MazeCell *)mazeCell{
+    
+}
+
+
 -(void)defaultRecusiveGrowMaze:(MazeCell *)mazeCell{
     //NSLog(@"recursive at (%i,%i)",mazeCell.x,mazeCell.y);
+    if (MaxStepsBeforeBacktraceActive) {
+        currentSteps++;
+    }
     [mazeCell visit];
     NSArray *neighbor = [self.mazeGraph cellUnvisitedNeighbors:mazeCell];
-    //NSLog(@"cellUnvisitedNeighbors: %lu", neighbor.count);
-    if (neighbor.count && neighbor.count > 0) {
+
+    /**
+     *  (!MaxStepsBeforeBacktraceActive || currentSteps <= MaxStepsBeforeBacktrace))
+     *
+     *  This statement is always true when MaxStepsBeforeBacktraceActive = false. Such this statement will skip the latter part.
+     *
+     *  When MaxStepsBeforeBacktraceActive = true, the first statement is always false, so the latter part must be checked.
+     *
+     */
+    if ((neighbor.count && neighbor.count > 0 ) && (!MaxStepsBeforeBacktraceActive || currentSteps <= MaxStepsBeforeBacktrace)) {
         MazeCell *randomNeighbor = neighbor[arc4random_uniform((int)neighbor.count)];
         [self.cellStack addObject:mazeCell];
         [self.mazeGraph removeEdgeBetween:mazeCell and:randomNeighbor];
         [self defaultRecusiveGrowMaze:randomNeighbor];
     }
     else{
+        if (MaxStepsBeforeBacktraceActive) {
+            // When a cell has no neighbour, or currentSteps is the max, reset this value for the use of next cell in self.cellStack
+            currentSteps = 0;
+        }
         if (self.cellStack.count) {
-            MazeCell *waitingCell = self.cellStack.lastObject;
-            [self.cellStack removeLastObject];
+            //MazeCell *waitingCell = self.cellStack.lastObject;// backtrace here?
+            //[self.cellStack removeLastObject];// and this
+            MazeCell *waitingCell = [self kindOfBacktraceUsingRandomCellFromCellStackWithStyle:2];
             [self defaultRecusiveGrowMaze:waitingCell];
         }
         
     }
+}
+
+/**
+ *  For example, if the algorithm always try to "fork" a branch from last cell in the stack, the maze will become very "smooth" and dont has much branches. Manipulate this method to generate different styles of Perfect Maze
+ */
+-(MazeCell *)kindOfBacktraceUsingRandomCellFromCellStackWithStyle:(int)style{
+    MazeCell *returnCell;
+    switch (style) {
+        //case 1, always lastObject, smoothy?
+        case 1:{
+            returnCell = self.cellStack.lastObject;// backtrace here?
+            [self.cellStack removeLastObject];// and this
+            break;
+        }
+        //case 2, random from cellStack. fun maze
+        case 2:{
+            unsigned int randomIndex = arc4random_uniform((int)self.cellStack.count);
+            returnCell = self.cellStack[randomIndex];
+            [self.cellStack removeObjectAtIndex:randomIndex];
+            break;
+        }
+
+        //case 3, always firstObject, branchy? meh..
+        case 3:{
+            returnCell = self.cellStack.firstObject;
+            [self.cellStack removeObjectAtIndex:0];
+            break;
+        }
+            
+        // default is the origin method, which return lastOject
+        default:{
+            returnCell = self.cellStack.lastObject;// backtrace here?
+            [self.cellStack removeLastObject];// and this
+            break;
+        }
+    }
+    
+    return returnCell;
 }
 
 -(void)defaultSolveMaze{
@@ -98,7 +187,7 @@
             if (!searchCell) {
                 searchCell = tempCell;
             }
-            else if (searchCell.discorver > tempCell.discorver){
+            else if (searchCell.discorver < tempCell.discorver){
                 searchCell = tempCell;
             }
         }
@@ -111,9 +200,9 @@
  *
  *  @param mazeCell mazeCell at (0,0)
  */
-
 -(void)defaultGenerateMaze{
     //NSLog(@"defaultGernerateMaze");
+    currentSteps = 0;
     [self defaultRecusiveGrowMaze:[[self mazeGraph] getCellAtX:0 y:0]];
 }
 

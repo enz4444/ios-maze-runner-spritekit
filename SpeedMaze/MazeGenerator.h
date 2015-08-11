@@ -33,10 +33,29 @@
 -(void)defaultMaze;
 
 /**
+ *  do all the necessary steps to build a maze;
+ */
+-(void)perfectMaze;
+
+/**
+ *  do all the necessary steps to build a maze;
+ */
+-(void)braidMaze;
+
+/**
  *  after default init, invoke this to default grow maze from (0,0)
  */
 -(void)defaultGenerateMaze;
 
+/**
+ *  Perfect maze generate algorithm; no cicular path; Every random two cells can be connected with a path
+ */
+-(void)perfectMazeGenerateMaze;
+
+/**
+ *  Braid maze generate algorithm; has circular path; Every random two cells can be connected with a path
+ */
+-(void)braidMazeGenerateMaze;
 
 /**
  *  as it said

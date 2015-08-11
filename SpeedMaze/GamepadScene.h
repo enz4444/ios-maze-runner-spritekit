@@ -20,7 +20,6 @@
 @end
 
 @protocol GamepadSceneDelegate <NSObject>
-@optional
 -(void)gamepadKeyTouched:(NSString *)keyName;
 
 @end
