@@ -1,42 +1,18 @@
-$_$
-1st: maze gen, maze solve, codes only
+ios maze runner with sprite kit
 
-2nd: maze UI,
+Here is the maze generator alone: https://github.com/littlebeef/ios-maze-generator-spritkit
 
-3rd: maze control, auto jump to corner
+To play: main menu offers choice of an avatar, and the size of maze. Enter a number(or just default) then click on an avatar name to start play. 
 
-4th: shadow, visible area, animation, trails
+Goal: Reach the top-right corner. Or press bottom-left green button to go back to main menu.
 
-5th: mutilplayer
+Avatar:
+- Giraffe has vision of nearby tiles. (Because it has long neck and see over the walls)
+- Snail leaves trail on path it passed.
+- Black box records its movment, press the bottom-right green button to "undo" its movement. This avatar has no movement animation.
+- Sunday will make the whole map visable.
 
-6th:menu and setting and option and sound effects
 
-# README #
+![alt tag](https://raw.githubusercontent.com/littlebeef/ios-maze-runner-spritekit/master/speedmaze-1.png)
+![alt tag](https://raw.githubusercontent.com/littlebeef/ios-maze-runner-spritekit/master/speedmaze-2.png)
 
-This README would normally document whatever steps are necessary to get your application up and running.
-
-### What is this repository for? ###
-
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
